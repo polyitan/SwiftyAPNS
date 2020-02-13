@@ -22,7 +22,7 @@ public class Provider: NSObject {
         self.sesion = URLSession.init(configuration: configuration, delegate: self, delegateQueue: qeue)
     }
     
-    public func push(_ notification: APNSNotification) {
+    public func push(_ notification: APNSNotification, completion: @escaping ((URLResponse?, Error?) -> Void)) {
         let url = URL.init(string: "https://api.development.push.apple.com/3/device/\(notification.token)")
         var request = URLRequest.init(url: url!)
         request.httpMethod = "POST"
@@ -39,7 +39,7 @@ public class Provider: NSObject {
         
         let task = self.sesion?.dataTask(with: request) { (data, responce, error) in
             if let error = error {
-                print(error)
+                completion(nil, error)
             } else if let responce = responce as? HTTPURLResponse, let data = data {
                 if let apnsStatus = APNSStatus(code: responce.statusCode),
                     let apnsId = responce.allHeaderFields["apns-id"] as? String
@@ -49,6 +49,8 @@ public class Provider: NSObject {
                     let reason = try? decoder.decode(APNSError.self, from: data)
                     let apnsResponce = APNSResponse(status: apnsStatus, apnsId: apnsId, reason: reason)
                     print(">>>: \(apnsResponce)")
+                    
+                    completion(responce, nil)
                 }
                 else {
                     // error cant parse responce

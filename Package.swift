@@ -17,6 +17,10 @@ let package = Package(
     targets: [
         .target(
             name: "SwiftyAPNS",
-            dependencies: [])
+            dependencies: []),
+        .testTarget(
+            name: "SwiftyAPNSTests",
+            dependencies: []
+        ),
     ]
 )
