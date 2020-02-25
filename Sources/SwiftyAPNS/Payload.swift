@@ -1,9 +1,9 @@
 //
 //  Payload.swift
-//  Nint
+//  SwiftyAPNS
 //
-//  Created by Tkachenko Sergey on 5/30/17.
-//  Copyright © 2017 Seriy Tkachenko. All rights reserved.
+//  Created by Tkachenko Sergii on 5/30/17.
+//  Copyright © 2017 Sergii Tkachenko. All rights reserved.
 //
 
 import Foundation
@@ -11,16 +11,39 @@ import Foundation
 /// Each remote notification includes a payload.
 /// The payload contains information about how the system should alert the user as well
 /// as any custom data you provide.
-public struct Payload: Encodable {
-    public let aps: APS
+public class Payload: Encodable {
+    public var aps: APS
     
-    public init (alert: APSAlert, badge: Int = 0, sound: String? = "default", category: String? = nil) {
+    public init(alert: APSAlert?, badge: Int?, sound: String?, contentAvailable: Int?, mutableContent: Int?, category: String?, threadId: String?) {
         var aps = APS()
         aps.alert = alert
         aps.badge = badge
         aps.sound = sound
+        aps.contentAvailable = contentAvailable
+        aps.mutableContent = mutableContent
         aps.category = category
+        aps.threadId = threadId
         self.aps = aps
+    }
+    
+    public convenience init(alert: APSAlert) {
+        self.init(alert: alert, badge: nil, sound: nil, contentAvailable: nil, mutableContent: nil, category: nil, threadId: nil)
+    }
+    
+    public convenience init(alert: APSAlert?, badge: Int? = 0) {
+        self.init(alert: alert, badge: badge, sound: nil, contentAvailable: nil, mutableContent: nil, category: nil, threadId: nil)
+    }
+    
+    public convenience init(alert: APSAlert?, badge: Int? = 0, sound: String? = "default") {
+        self.init(alert: alert, badge: badge, sound: sound, contentAvailable: nil, mutableContent: nil, category: nil, threadId: nil)
+    }
+    
+    public convenience init(alert: APSAlert?, badge: Int? = 0, sound: String? = "default", category: String? = nil) {
+        self.init(alert: alert, badge: badge, sound: sound, contentAvailable: nil, mutableContent: nil, category: category, threadId: nil)
+    }
+    
+    public static var background: Payload {
+        return Payload(alert: nil, badge: nil, sound: nil, contentAvailable: 1, mutableContent: nil, category: nil, threadId: nil)
     }
 }
 
@@ -43,8 +66,15 @@ public struct APS: Encodable {
     /// Provide this key with a value of 1 to indicate that new content is available.
     public var contentAvailable: Int?
     
+    /// Provide this key with a value of 1 to indicate that the content of a remote notification
+    /// will be modified before it's delivered to the user.
+    public var mutableContent: Int?
+    
     /// Provide this key with a string value that represents the identifier property.
     public var category: String?
+    
+    /// Provide this key with a string value that represents the app-specific identifier for grouping notifications.
+    public var threadId: String?
     
     /// Keys that uses for encoding and decoding.
     private enum CodingKeys: String, CodingKey {
@@ -52,7 +82,9 @@ public struct APS: Encodable {
         case badge
         case sound
         case contentAvailable = "content-available"
+        case mutableContent = "mutable-content"
         case category
+        case threadId = "thread-id"
     }
 }
 
@@ -68,12 +100,11 @@ public enum APSAlert {
 
 extension APSAlert: Encodable {
     public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
         switch self {
         case .plain(let text):
-            var container = encoder.singleValueContainer()
             try container.encode(text)
         case .localized(let alert):
-            var container = encoder.singleValueContainer()
             try container.encode(alert)
         }
     }
@@ -86,8 +117,11 @@ extension APSAlert: Encodable {
 
 /// Child properties of the alert property.
 public struct APSLocalizedAlert: Encodable {
-    /// A short string describing the purpose of the notification
+    /// A short string describing the purpose of the notification.
     public var title: String?
+    
+    /// A short string that expands on the title.
+    public var subtitle: String?
     
     /// The text of the alert message.
     public var body: String?
@@ -114,6 +148,7 @@ public struct APSLocalizedAlert: Encodable {
     /// Keys that uses for encoding and decoding.
     private enum CodingKeys: String, CodingKey {
         case title
+        case subtitle
         case body
         case titleLocKey  = "title-loc-key"
         case titleLocArgs = "title-loc-args"

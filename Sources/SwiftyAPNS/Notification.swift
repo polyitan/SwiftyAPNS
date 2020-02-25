@@ -1,9 +1,9 @@
 //
 //  Notification.swift
-//  Nint
+//  SwiftyAPNS
 //
-//  Created by Tkachenko Sergey on 5/30/17.
-//  Copyright © 2017 Seriy Tkachenko. All rights reserved.
+//  Created by Tkachenko Sergii on 5/30/17.
+//  Copyright © 2017 Sergii Tkachenko. All rights reserved.
 //
 
 import Foundation

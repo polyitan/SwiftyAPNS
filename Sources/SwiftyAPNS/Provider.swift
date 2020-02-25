@@ -1,9 +1,9 @@
 //
 //  Provider.swift
-//  Nint
+//  SwiftyAPNS
 //
-//  Created by Tkachenko Sergey on 5/30/17.
-//  Copyright © 2017 Seriy Tkachenko. All rights reserved.
+//  Created by Tkachenko Sergii on 5/30/17.
+//  Copyright © 2017 Sergii Tkachenko. All rights reserved.
 //
 
 import Foundation
@@ -13,7 +13,7 @@ public class Provider: NSObject {
     private var identity: SecIdentity
     private var sesion: URLSession?
     
-    public init (identity: SecIdentity, sandbox: Bool = true, qeue: OperationQueue = OperationQueue.main) {
+    public init(identity: SecIdentity, sandbox: Bool = true, qeue: OperationQueue = OperationQueue.main) {
         self.identity = identity
         
         super.init()
@@ -22,42 +22,71 @@ public class Provider: NSObject {
         self.sesion = URLSession.init(configuration: configuration, delegate: self, delegateQueue: qeue)
     }
     
-    public func push(_ notification: APNSNotification, completion: @escaping ((URLResponse?, Error?) -> Void)) {
-        let url = URL.init(string: "https://api.development.push.apple.com/3/device/\(notification.token)")
-        var request = URLRequest.init(url: url!)
+    public func push(_ notification: APNSNotification, completion: @escaping (Result<APNSResponse, APNSError>) -> Void) {
+        
+        let options = notification.options
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = options.url
+        components.path = "/3/device/\(notification.token)"
+        if let port = options.port {
+            components.port = port.rawValue
+        }
+        guard let url = components.url else {
+            // TODO: completion(.failure(APNSError))
+            return
+        }
+        var request = URLRequest.init(url: url)
         request.httpMethod = "POST"
         
-        let encoder = JSONEncoder()
-        let decoder = JSONDecoder()
+        if let type = options.type {
+            request.setValue("\(type)", forHTTPHeaderField: "apns-push-type")
+        }
+        if let id = options.id {
+            request.setValue("\(id)", forHTTPHeaderField: "apns-id")
+        }
+        if let expiration = options.expiration {
+            request.setValue("\(expiration)", forHTTPHeaderField: "apns-expiration")
+        }
+        if let priority = options.priority {
+            request.setValue("\(priority.rawValue)", forHTTPHeaderField: "apns-priority")
+        }
+        if let topic = options.topic {
+            request.setValue("\(topic)", forHTTPHeaderField: "apns-topic")
+        }
+        if let collapseId = options.collapseId {
+            request.setValue("\(collapseId)", forHTTPHeaderField: "apns-collapse-id")
+        }
         
+        let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         do {
             let payload = try encoder.encode(notification.payload)
             request.httpBody = payload
         }
-        catch {}
+        catch {
+            // TODO: completion(.failure(APNSError))
+            return
+        }
         
         let task = self.sesion?.dataTask(with: request) { (data, responce, error) in
-            if let error = error {
-                completion(nil, error)
+            if let _ = error {
+                // TODO: completion(.failure(APNSError))
             } else if let responce = responce as? HTTPURLResponse, let data = data {
                 if let apnsStatus = APNSStatus(code: responce.statusCode),
                     let apnsId = responce.allHeaderFields["apns-id"] as? String
                 {
-                    print(">>> res >: \(responce)")
-                    
+                    let decoder = JSONDecoder()
                     let reason = try? decoder.decode(APNSError.self, from: data)
                     let apnsResponce = APNSResponse(status: apnsStatus, apnsId: apnsId, reason: reason)
-                    print(">>>: \(apnsResponce)")
-                    
-                    completion(responce, nil)
+                    completion(.success(apnsResponce))
                 }
                 else {
-                    // error cant parse responce
+                    // TODO: completion(.failure(APNSError)) // error cant parse responce
                 }
             }
             else {
-                // error empty data
+                // TODO: completion(.failure(APNSError)) // error empty data
             }
         }
         

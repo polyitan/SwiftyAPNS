@@ -1,15 +1,15 @@
 //
 //  Error.swift
-//  Nint
+//  SwiftyAPNS
 //
-//  Created by Tkachenko Sergey on 5/30/17.
-//  Copyright © 2017 Seriy Tkachenko. All rights reserved.
+//  Created by Tkachenko Sergii on 5/30/17.
+//  Copyright © 2017 Sergii Tkachenko. All rights reserved.
 //
 
 import Foundation
 
 /// The APNS reasons.
-public enum APNSError {
+public enum APNSError: Error {
     
     case PayloadEmpty
     case PayloadTooLarge
@@ -35,7 +35,7 @@ public enum APNSError {
     case ServiceUnavailable
     case MissingTopic
     
-    public var description : String {
+    public var description: String {
         switch self {
         case .PayloadEmpty: return
             "The message payload was empty"
