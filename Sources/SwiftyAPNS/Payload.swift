@@ -26,14 +26,6 @@ public class Payload: Encodable {
         self.aps = aps
     }
     
-    public convenience init(alert: APSAlert) {
-        self.init(alert: alert, badge: nil, sound: nil, contentAvailable: nil, mutableContent: nil, category: nil, threadId: nil)
-    }
-    
-    public convenience init(alert: APSAlert?, badge: Int? = 0) {
-        self.init(alert: alert, badge: badge, sound: nil, contentAvailable: nil, mutableContent: nil, category: nil, threadId: nil)
-    }
-    
     public convenience init(alert: APSAlert?, badge: Int? = 0, sound: String? = "default") {
         self.init(alert: alert, badge: badge, sound: sound, contentAvailable: nil, mutableContent: nil, category: nil, threadId: nil)
     }
@@ -44,6 +36,10 @@ public class Payload: Encodable {
     
     public static var background: Payload {
         return Payload(alert: nil, badge: nil, sound: nil, contentAvailable: 1, mutableContent: nil, category: nil, threadId: nil)
+    }
+    
+    public static var mutable: Payload {
+        return Payload(alert: nil, badge: nil, sound: nil, contentAvailable: 0, mutableContent: 1, category: nil, threadId: nil)
     }
 }
 

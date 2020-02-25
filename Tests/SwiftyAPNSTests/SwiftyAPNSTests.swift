@@ -74,7 +74,7 @@ public class CustomPayload3: Payload {
 final class SwiftyAPNSTests: XCTestCase {
     let token = "0ab0aaff76ab302ecba6e28fddcc457c8e9c12f6cff68d9fecdce2b6df1f1177"
     let topic = "com.push.example"
-    let pushCertPath = "./dev_push_cert.p12"
+    let pushCertPath = "./push_cert.p12"
     let pushPassword = "secure"
     
     func testAlertPushExample() {
@@ -174,16 +174,28 @@ final class SwiftyAPNSTests: XCTestCase {
             XCTFail("Fail"); return
         }
         
-        let expect = self.expectation(description: "apnsExpectation")
-        let provider = Provider.init(identity: identity)
-        provider.push(notification) { (response, error) in
-            XCTAssertTrue(error == nil, "No error")
-            expect.fulfill()
+        let expect = self.expectation(description: "APNSExpectation")
+        let provider = APNSProvider.init(identity: identity)
+        provider.push(notification) { (result) in
+            switch(result) {
+            case .success(let responce):
+                if let error = responce.reason {
+                    XCTFail(error.description)
+                } else {
+                    expect.fulfill()
+                }
+            case .failure(let error):
+                if let error = error as? APNSProviderError {
+                    XCTFail(error.description)
+                } else {
+                    XCTFail(error.localizedDescription)
+                }
+            }
         }
         
         self.waitForExpectations(timeout: 5.0) { (error) in
             if let error = error {
-                print("Error \(error)")
+                XCTFail(error.localizedDescription)
             }
         }
     }

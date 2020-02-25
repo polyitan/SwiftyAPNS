@@ -8,21 +8,39 @@
 
 import Foundation
 
-public class Provider: NSObject {
+public enum APNSProviderError: Error {
+    
+    case BadUrl
+    case EncodePayload
+    case ParseResponce
+    case EmptyData
+    
+    public var description: String {
+        switch self {
+        case .BadUrl: return
+            "The url was invalid"
+        case .EncodePayload: return
+            "Can't encode payload"
+        case .ParseResponce: return
+            "Can't parse responce"
+        case .EmptyData: return
+            "Empty data"
+        }
+    }
+}
+
+public class APNSProvider: NSObject {
     
     private var identity: SecIdentity
     private var sesion: URLSession?
     
-    public init(identity: SecIdentity, sandbox: Bool = true, qeue: OperationQueue = OperationQueue.main) {
+    public init(identity: SecIdentity, sandbox: Bool = true, configuration: URLSessionConfiguration = URLSessionConfiguration.default, qeue: OperationQueue = OperationQueue.main) {
         self.identity = identity
-        
         super.init()
-        
-        let configuration = URLSessionConfiguration.default
         self.sesion = URLSession.init(configuration: configuration, delegate: self, delegateQueue: qeue)
     }
     
-    public func push(_ notification: APNSNotification, completion: @escaping (Result<APNSResponse, APNSError>) -> Void) {
+    public func push(_ notification: APNSNotification, completion: @escaping (Result<APNSResponse, Error>) -> Void) {
         
         let options = notification.options
         var components = URLComponents()
@@ -33,7 +51,7 @@ public class Provider: NSObject {
             components.port = port.rawValue
         }
         guard let url = components.url else {
-            // TODO: completion(.failure(APNSError))
+            completion(.failure(APNSProviderError.BadUrl))
             return
         }
         var request = URLRequest.init(url: url)
@@ -65,13 +83,13 @@ public class Provider: NSObject {
             request.httpBody = payload
         }
         catch {
-            // TODO: completion(.failure(APNSError))
+            completion(.failure(APNSProviderError.EncodePayload))
             return
         }
         
         let task = self.sesion?.dataTask(with: request) { (data, responce, error) in
-            if let _ = error {
-                // TODO: completion(.failure(APNSError))
+            if let error = error {
+                completion(.failure(error))
             } else if let responce = responce as? HTTPURLResponse, let data = data {
                 if let apnsStatus = APNSStatus(code: responce.statusCode),
                     let apnsId = responce.allHeaderFields["apns-id"] as? String
@@ -82,19 +100,18 @@ public class Provider: NSObject {
                     completion(.success(apnsResponce))
                 }
                 else {
-                    // TODO: completion(.failure(APNSError)) // error cant parse responce
+                    completion(.failure(APNSProviderError.ParseResponce))
                 }
             }
             else {
-                // TODO: completion(.failure(APNSError)) // error empty data
+                completion(.failure(APNSProviderError.EmptyData))
             }
         }
-        
         task?.resume()
     }
 }
 
-extension Provider: URLSessionDelegate {
+extension APNSProvider: URLSessionDelegate {
     public func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
         if let error = error {
             print("Error: \(error)")
