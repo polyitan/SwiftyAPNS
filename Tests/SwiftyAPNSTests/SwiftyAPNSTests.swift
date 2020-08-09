@@ -1,81 +1,34 @@
+//
+//  SwiftyAPNSTests.swift
+//  SwiftyAPNSTests
+//
+
 import XCTest
 @testable import SwiftyAPNS
 
-public class CustomPayload1: Payload {
-
-    public let acme1: String
-    public let acme2: Int
-
-    public init (alert: APSAlert?, badge: Int?, sound: String?, category: String?, acme1: String, acme2: Int) {
-        self.acme1 = acme1
-        self.acme2 = acme2
-        super.init(alert: alert, badge: badge, sound: sound, contentAvailable: (alert == nil) ? 1 : nil, mutableContent: nil, category: category, threadId: nil)
-    }
-    
-    public init (acme1: String, acme2: Int) {
-        self.acme1 = acme1
-        self.acme2 = acme2
-        super.init(alert: nil, badge: nil, sound: nil, contentAvailable: 1, mutableContent: nil, category: nil, threadId: nil)
-    }
-    
-    override public func encode(to encoder: Encoder) throws {
-        try super.encode(to: encoder)
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(acme1, forKey: .acme1)
-        try container.encode(acme2, forKey: .acme2)
-    }
-
-    private enum CodingKeys: String, CodingKey {
-        case acme1
-        case acme2
-    }
-}
-
-public class CustomPayload2: Payload {
-
-    public let acme1: [String]
-
-    public init (alert: APSAlert?, badge: Int?, sound: String?, category: String?, acme1: [String]) {
-        self.acme1 = acme1
-        super.init(alert: alert, badge: badge, sound: sound, contentAvailable: (alert == nil) ? 1 : nil, mutableContent: nil, category: category, threadId: nil)
-    }
-
-    override public func encode(to encoder: Encoder) throws {
-        try super.encode(to: encoder)
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(acme1, forKey: .acme1)
-    }
-
-    private enum CodingKeys: String, CodingKey {
-        case acme1
-    }
-}
-
-public class CustomPayload3: Payload {
-
-    public let encrypted: String
-
-    public init (alert: APSAlert?, badge: Int?, sound: String?, category: String?, encrypted: String) {
-        self.encrypted = encrypted
-        super.init(alert: alert, badge: badge, sound: sound, contentAvailable: nil, mutableContent: 1, category: category, threadId: nil)
-    }
-
-    override public func encode(to encoder: Encoder) throws {
-        try super.encode(to: encoder)
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(encrypted, forKey: .encrypted)
-    }
-
-    private enum CodingKeys: String, CodingKey {
-        case encrypted
-    }
+enum CertificateConfigKey: String, StringEnum {
+    case certPath = "CERT_PATH"
+    case certPass = "CERT_PASS"
+    case token = "TOKEN"
+    case topic = "TOPIC"
 }
 
 final class SwiftyAPNSTests: XCTestCase {
-    let token = "0ab0aaff76ab302ecba6e28fddcc457c8e9c12f6cff68d9fecdce2b6df1f1177"
-    let topic = "com.push.example"
-    let pushCertPath = "./push_cert.p12"
-    let pushPassword = "secure"
+    private var provider: APNSProvider! = nil
+    private var token: String! = nil
+    private var topic: String! = nil
+    
+    override func setUp() {
+        super.setUp()
+        
+        let plistData = readPropertyList("CertificateConfig")
+        let pushCertPath = plistData[CertificateConfigKey.certPath]!
+        let pushPassword = plistData[CertificateConfigKey.certPass]!
+        let identity = identityFrom(pushCertPath, password: pushPassword)!
+        provider = APNSProvider.init(identity: identity)
+        token = plistData[CertificateConfigKey.token]!
+        topic = plistData[CertificateConfigKey.topic]!
+    }
     
     func testAlertPushExample() {
         let payload = Payload(alert: APSAlert.plain(plain: "Test Alert notification."))
@@ -83,7 +36,7 @@ final class SwiftyAPNSTests: XCTestCase {
         options.type = .alert
         options.topic = topic
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
-        sendPushNotification(notification, path: pushCertPath, password: pushPassword)
+        sendPushNotification(notification)
     }
     
     func testAlertWithSubtitlePushExample() {
@@ -96,7 +49,7 @@ final class SwiftyAPNSTests: XCTestCase {
         options.type = .alert
         options.topic = topic
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
-        sendPushNotification(notification, path: pushCertPath, password: pushPassword)
+        sendPushNotification(notification)
     }
     
     func testLocalizableAlertPushExample() {
@@ -108,7 +61,7 @@ final class SwiftyAPNSTests: XCTestCase {
         options.type = .alert
         options.topic = topic
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
-        sendPushNotification(notification, path: pushCertPath, password: pushPassword)
+        sendPushNotification(notification)
     }
     
     func testAlertWithCustomActionsPushExample() {
@@ -119,7 +72,7 @@ final class SwiftyAPNSTests: XCTestCase {
         options.type = .alert
         options.topic = topic
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
-        sendPushNotification(notification, path: pushCertPath, password: pushPassword)
+        sendPushNotification(notification)
     }
     
     func testLocalizableAlertPushWithCustomPayloadExample1() {
@@ -130,7 +83,7 @@ final class SwiftyAPNSTests: XCTestCase {
         options.type = .alert
         options.topic = topic
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
-        sendPushNotification(notification, path: pushCertPath, password: pushPassword)
+        sendPushNotification(notification)
     }
     
     func testLocalizableAlertPushWithCustomPayloadExample2() {
@@ -141,16 +94,17 @@ final class SwiftyAPNSTests: XCTestCase {
         options.type = .alert
         options.topic = topic
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
-        sendPushNotification(notification, path: pushCertPath, password: pushPassword)
+        sendPushNotification(notification)
     }
     
     func testBackgroundPushExample() {
         let payload = CustomPayload1(acme1: "bar", acme2: 42)
         var options = NotificationOptions.default
-        options.type = .alert
+        options.type = .alert//.voip
         options.topic = topic
+        //options.environment = .production
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
-        sendPushNotification(notification, path: pushCertPath, password: pushPassword)
+        sendPushNotification(notification)
     }
     
     func testModifyingContentPushExample() {
@@ -161,21 +115,29 @@ final class SwiftyAPNSTests: XCTestCase {
         options.type = .alert
         options.topic = topic
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
-        sendPushNotification(notification, path: pushCertPath, password: pushPassword)
+        sendPushNotification(notification)
     }
-    
-    private func sendPushNotification(_ notification: APNSNotification, path: String, password: String) {
+
+    static var allTests = [
+        ("testAlertPushExample", testAlertPushExample),
+        ("testAlertWithSubtitlePushExample", testAlertWithSubtitlePushExample),
+        ("testLocalizableAlertPushExample", testLocalizableAlertPushExample),
+        ("testAlertWithCustomActionsPushExample", testAlertWithCustomActionsPushExample),
+        ("testLocalizableAlertPushWithCustomPayloadExample1", testLocalizableAlertPushWithCustomPayloadExample1),
+        ("testLocalizableAlertPushWithCustomPayloadExample2", testLocalizableAlertPushWithCustomPayloadExample2),
+        ("testBackgroundPushExample", testBackgroundPushExample),
+        ("testModifyingContentPushExample", testModifyingContentPushExample)
+    ]
+}
+
+extension SwiftyAPNSTests {
+    private func sendPushNotification(_ notification: APNSNotification) {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         let encoded = try! encoder.encode(notification.payload)
         print(String(data: encoded, encoding: .utf8)!)
         
-        guard let identity: SecIdentity = identityFrom(path, password: password) else {
-            XCTFail("Fail"); return
-        }
-        
         let expect = self.expectation(description: "APNSExpectation")
-        let provider = APNSProvider.init(identity: identity)
         provider.push(notification) { (result) in
             switch(result) {
             case .success(let responce):
@@ -200,9 +162,22 @@ final class SwiftyAPNSTests: XCTestCase {
         }
     }
     
+    private func readPropertyList(_ name: String) -> [String: String] {
+        var propertyListFormat = PropertyListSerialization.PropertyListFormat.xml
+        let bundle = Bundle(for: type(of: self))
+        let plistPath = bundle.path(forResource: name, ofType: "plist")!
+        let plistXML = FileManager.default.contents(atPath: plistPath)!
+        let plistData = try! PropertyListSerialization.propertyList(from: plistXML,
+                                                                    options: .mutableContainersAndLeaves,
+                                                                    format: &propertyListFormat) as! [String: String]
+        return plistData
+    }
+    
     private func identityFrom(_ path: String, password: String) -> SecIdentity? {
         let url = URL(fileURLWithPath: path)
+        print("\(url)")
         let PKCS12Data = try? Data(contentsOf: url)
+        print("\(String(describing: PKCS12Data))")
         let PKCS12options: NSDictionary = [kSecImportExportPassphrase as NSString: password]
         
         var items: CFArray?
@@ -211,7 +186,7 @@ final class SwiftyAPNSTests: XCTestCase {
             XCTFail("Fail"); return nil
         }
         
-        guard let theItemsCFArray = items else {
+        guard items != nil else {
             XCTFail("Fail"); return nil
         }
         
@@ -234,15 +209,4 @@ final class SwiftyAPNSTests: XCTestCase {
         
         return identity
     }
-
-    static var allTests = [
-        ("testAlertPushExample", testAlertPushExample),
-        ("testAlertWithSubtitlePushExample", testAlertWithSubtitlePushExample),
-        ("testLocalizableAlertPushExample", testLocalizableAlertPushExample),
-        ("testAlertWithCustomActionsPushExample", testAlertWithCustomActionsPushExample),
-        ("testLocalizableAlertPushWithCustomPayloadExample1", testLocalizableAlertPushWithCustomPayloadExample1),
-        ("testLocalizableAlertPushWithCustomPayloadExample2", testLocalizableAlertPushWithCustomPayloadExample2),
-        ("testBackgroundPushExample", testBackgroundPushExample),
-        ("testModifyingContentPushExample", testModifyingContentPushExample)
-    ]
 }

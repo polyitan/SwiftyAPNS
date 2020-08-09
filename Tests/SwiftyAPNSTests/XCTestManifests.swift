@@ -1,3 +1,8 @@
+//
+//  XCTestManifests.swift
+//  SwiftyAPNSTests
+//
+
 import XCTest
 
 #if !os(macOS)
