@@ -31,8 +31,8 @@ final class SwiftyAPNSTests: XCTestCase {
     }
     
     func testAlertPushExample() {
-        let payload = Payload(alert: APSAlert.plain(plain: "Test Alert notification."))
-        var options = NotificationOptions.default
+        let payload = APNSPayload(alert: APSAlert.plain(plain: "Test Alert notification."))
+        var options = APNSNotificationOptions.default
         options.type = .alert
         options.topic = topic
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
@@ -44,8 +44,8 @@ final class SwiftyAPNSTests: XCTestCase {
         alert.title = "Test"
         alert.subtitle = "Alert notification"
         alert.body = "with subtitle."
-        let payload = Payload(alert: APSAlert.localized(alert: alert))
-        var options = NotificationOptions.default
+        let payload = APNSPayload(alert: APSAlert.localized(alert: alert))
+        var options = APNSNotificationOptions.default
         options.type = .alert
         options.topic = topic
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
@@ -56,8 +56,8 @@ final class SwiftyAPNSTests: XCTestCase {
         var alert = APSLocalizedAlert()
         alert.locKey = "REQUEST_FORMAT"
         alert.locArgs = ["Jenna", "Frank"]
-        let payload = Payload(alert: APSAlert.localized(alert: alert))
-        var options = NotificationOptions.default
+        let payload = APNSPayload(alert: APSAlert.localized(alert: alert))
+        var options = APNSNotificationOptions.default
         options.type = .alert
         options.topic = topic
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
@@ -67,8 +67,8 @@ final class SwiftyAPNSTests: XCTestCase {
     func testAlertWithCustomActionsPushExample() {
         var alert = APSLocalizedAlert()
         alert.body = "Test Alert with custom action notification."
-        let payload = Payload(alert: APSAlert.localized(alert: alert), badge: 1, sound: "default.wav", category: "MESSAGE_CATEGORY")
-        var options = NotificationOptions.default
+        let payload = APNSPayload(alert: APSAlert.localized(alert: alert), badge: 1, sound: "default.wav", category: "MESSAGE_CATEGORY")
+        var options = APNSNotificationOptions.default
         options.type = .alert
         options.topic = topic
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
@@ -79,7 +79,7 @@ final class SwiftyAPNSTests: XCTestCase {
         var alert = APSLocalizedAlert()
         alert.body = "Test Alert with custom payload notification."
         let payload = CustomPayload1(alert: APSAlert.localized(alert: alert), badge: 1, sound: "default.wav", category: "MESSAGE_CATEGORY", acme1: "bar", acme2: 42)
-        var options = NotificationOptions.default
+        var options = APNSNotificationOptions.default
         options.type = .alert
         options.topic = topic
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
@@ -90,7 +90,7 @@ final class SwiftyAPNSTests: XCTestCase {
         var alert = APSLocalizedAlert()
         alert.body = "Test Alert with custom payload notification."
         let payload = CustomPayload2(alert: APSAlert.localized(alert: alert), badge: 1, sound: "default.wav", category: "MESSAGE_CATEGORY", acme1: ["bang", "whiz"])
-        var options = NotificationOptions.default
+        var options = APNSNotificationOptions.default
         options.type = .alert
         options.topic = topic
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
@@ -99,7 +99,7 @@ final class SwiftyAPNSTests: XCTestCase {
     
     func testBackgroundPushExample() {
         let payload = CustomPayload1(acme1: "bar", acme2: 42)
-        var options = NotificationOptions.default
+        var options = APNSNotificationOptions.default
         options.type = .alert//.voip
         options.topic = topic
         //options.environment = .production
@@ -111,7 +111,7 @@ final class SwiftyAPNSTests: XCTestCase {
         var alert = APSLocalizedAlert()
         alert.body = "Test mutable conten payload notification."
         let payload = CustomPayload3(alert: APSAlert.localized(alert: alert), badge: 1, sound: "default.wav", category: "MESSAGE_CATEGORY", encrypted: "Ω^¬%gq∞NÿÒQùw")
-        var options = NotificationOptions.default
+        var options = APNSNotificationOptions.default
         options.type = .alert
         options.topic = topic
         let notification = APNSNotification.init(payload: payload, token: token, options: options)

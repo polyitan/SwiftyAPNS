@@ -11,8 +11,8 @@ import Foundation
 /// Each remote notification includes a payload.
 /// The payload contains information about how the system should alert the user as well
 /// as any custom data you provide.
-public class Payload: Encodable {
-    public var aps: APS
+public class APNSPayload: Encodable {
+    public var aps: APS?
     
     public init(alert: APSAlert?, badge: Int?, sound: String?, contentAvailable: Int?, mutableContent: Int?, category: String?, threadId: String?) {
         var aps = APS()
@@ -34,12 +34,12 @@ public class Payload: Encodable {
         self.init(alert: alert, badge: badge, sound: sound, contentAvailable: nil, mutableContent: nil, category: category, threadId: nil)
     }
     
-    public static var background: Payload {
-        return Payload(alert: nil, badge: nil, sound: nil, contentAvailable: 1, mutableContent: nil, category: nil, threadId: nil)
+    public static var background: APNSPayload {
+        return APNSPayload(alert: nil, badge: nil, sound: nil, contentAvailable: 1, mutableContent: nil, category: nil, threadId: nil)
     }
     
-    public static var mutable: Payload {
-        return Payload(alert: nil, badge: nil, sound: nil, contentAvailable: 0, mutableContent: 1, category: nil, threadId: nil)
+    public static var mutable: APNSPayload {
+        return APNSPayload(alert: nil, badge: nil, sound: nil, contentAvailable: 0, mutableContent: 1, category: nil, threadId: nil)
     }
 }
 

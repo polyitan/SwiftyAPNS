@@ -6,7 +6,7 @@
 import Foundation
 @testable import SwiftyAPNS
 
-public class CustomPayload1: Payload {
+public class CustomPayload1: APNSPayload {
 
     public let acme1: String
     public let acme2: Int
@@ -36,7 +36,7 @@ public class CustomPayload1: Payload {
     }
 }
 
-public class CustomPayload2: Payload {
+public class CustomPayload2: APNSPayload {
 
     public let acme1: [String]
 
@@ -56,7 +56,7 @@ public class CustomPayload2: Payload {
     }
 }
 
-public class CustomPayload3: Payload {
+public class CustomPayload3: APNSPayload {
 
     public let encrypted: String
 

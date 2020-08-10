@@ -9,7 +9,7 @@
 import Foundation
 
 /// Request headers.
-public struct NotificationOptions {
+public struct APNSNotificationOptions {
     /// The value of this header must accurately reflect the contents of your notifications payload.
     public var type: APNSType?
     
@@ -44,9 +44,9 @@ public struct NotificationOptions {
     }
 }
 
-extension NotificationOptions {
-    public static var `default`: NotificationOptions {
-        return NotificationOptions()
+extension APNSNotificationOptions {
+    public static var `default`: APNSNotificationOptions {
+        return APNSNotificationOptions()
     }
     
     public enum APNSType: String {
