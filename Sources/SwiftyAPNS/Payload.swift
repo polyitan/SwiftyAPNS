@@ -72,6 +72,9 @@ public struct APS: Encodable {
     /// Provide this key with a string value that represents the app-specific identifier for grouping notifications.
     public var threadId: String?
     
+    // Provide this key with a value of the identifier of the window brought forward.
+    public var targetContentId: String?
+    
     /// Keys that uses for encoding and decoding.
     private enum CodingKeys: String, CodingKey {
         case alert
@@ -81,6 +84,7 @@ public struct APS: Encodable {
         case mutableContent = "mutable-content"
         case category
         case threadId = "thread-id"
+        case targetContentId = "target-content-id"
     }
 }
 
@@ -128,6 +132,12 @@ public struct APSLocalizedAlert: Encodable {
     /// Variable string values to appear in place of the format specifiers in title-loc-key.
     public var titleLocArgs: [String]?
     
+    /// The key to a subtitle string in the Localizable.strings file for the current localization.
+    public var subtitleLocKey: String?
+    
+    /// Variable string values to appear in place of the format specifiers in subtitle-loc-key.
+    public var subtitleLocArgs: [String]?
+    
     /// If a string is specified, the system displays an alert that includes the Close and View buttons.
     public var actionLocKey: String?
     
@@ -148,6 +158,8 @@ public struct APSLocalizedAlert: Encodable {
         case body
         case titleLocKey  = "title-loc-key"
         case titleLocArgs = "title-loc-args"
+        case subtitleLocKey = "subtitle-loc-key"
+        case subtitleLocArgs = "subtitle-loc-args"
         case actionLocKey = "action-loc-key"
         case locKey  = "loc-key"
         case locArgs = "loc-args"
