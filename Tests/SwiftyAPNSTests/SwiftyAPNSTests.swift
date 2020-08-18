@@ -13,6 +13,14 @@ enum CertificateConfigKey: String, StringEnum {
     case topic = "TOPIC"
 }
 
+enum KeyConfigKey: String, StringEnum {
+    case keyPath = "KEY_PATH"
+    case keyId   = "KEY_ID"
+    case teamId  = "TEAM_ID"
+    case token = "TOKEN"
+    case topic = "TOPIC"
+}
+
 final class SwiftyAPNSTests: XCTestCase {
     private var provider: APNSProvider! = nil
     private var token: String! = nil
@@ -20,14 +28,41 @@ final class SwiftyAPNSTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        
+#if true
         let plistData = readPropertyList("CertificateConfig")
         let pushCertPath = plistData[CertificateConfigKey.certPath]!
         let pushPassword = plistData[CertificateConfigKey.certPass]!
-        let identity = identityFrom(pushCertPath, password: pushPassword)!
-        provider = APNSProvider.init(identity: identity)
+        let PKCS12Data = try! Data(contentsOf: URL(fileURLWithPath: pushCertPath))
+        let identity = SecurityTools.identityFromPKCS12(PKCS12Data, password: pushPassword)
+        switch identity {
+        case .success(let info):
+            let type = getType(identity: info.identity)
+            if type == .Invalid {
+                XCTFail("Invalid Certificate type")
+            }
+            let topics = getTopics(identity: info.identity)
+            print("Certificate topics:")
+            for topic in topics {
+                print("\t\(topic)")
+            }
+            provider = APNSProvider.init(identity: info.identity)
+        case .failure(let error):
+            XCTFail(error.localizedDescription)
+        }
+        
         token = plistData[CertificateConfigKey.token]!
         topic = plistData[CertificateConfigKey.topic]!
+#else
+        let plistData = readPropertyList("KeyConfig")
+        let pushKeyPath = plistData[KeyConfigKey.keyPath]!
+        let pushKeyId = plistData[KeyConfigKey.keyId]!
+        let pushTeamId = plistData[KeyConfigKey.teamId]!
+        let pushKeyData = try! Data(contentsOf: URL(fileURLWithPath: pushKeyPath))
+        let pushKeyP8 = String(decoding: pushKeyData, as: UTF8.self)
+        provider = APNSProvider.init(p8: pushKeyP8, keyId: pushKeyId, teamId: pushTeamId, issuedAt: Date())
+        token = plistData[KeyConfigKey.token]!
+        topic = plistData[KeyConfigKey.topic]!
+#endif
     }
     
     func testAlertPushExample() {
@@ -54,7 +89,8 @@ final class SwiftyAPNSTests: XCTestCase {
     
     func testLocalizableAlertPushExample() {
         var alert = APSLocalizedAlert()
-        alert.locKey = "REQUEST_FORMAT"
+        let REQUEST_FORMAT = "Frends: %@, %@"
+        alert.locKey = REQUEST_FORMAT
         alert.locArgs = ["Jenna", "Frank"]
         let payload = APNSPayload(alert: APSAlert.localized(alert: alert))
         var options = APNSNotificationOptions.default
@@ -132,10 +168,12 @@ final class SwiftyAPNSTests: XCTestCase {
 
 extension SwiftyAPNSTests {
     private func sendPushNotification(_ notification: APNSNotification) {
+#if true
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         let encoded = try! encoder.encode(notification.payload)
-        print(String(data: encoded, encoding: .utf8)!)
+        print("Payload:\n\(String(data: encoded, encoding: .utf8)!)")
+#endif
         
         let expect = self.expectation(description: "APNSExpectation")
         provider.push(notification) { (result) in
@@ -147,10 +185,10 @@ extension SwiftyAPNSTests {
                     expect.fulfill()
                 }
             case .failure(let error):
-                if let error = error as? APNSProviderError {
-                    XCTFail(error.description)
-                } else {
+                if let error = error as? LocalizedError {
                     XCTFail(error.localizedDescription)
+                } else {
+                    XCTFail("Failure send push notification")
                 }
             }
         }
@@ -171,42 +209,5 @@ extension SwiftyAPNSTests {
                                                                     options: .mutableContainersAndLeaves,
                                                                     format: &propertyListFormat) as! [String: String]
         return plistData
-    }
-    
-    private func identityFrom(_ path: String, password: String) -> SecIdentity? {
-        let url = URL(fileURLWithPath: path)
-        print("\(url)")
-        let PKCS12Data = try? Data(contentsOf: url)
-        print("\(String(describing: PKCS12Data))")
-        let PKCS12options: NSDictionary = [kSecImportExportPassphrase as NSString: password]
-        
-        var items: CFArray?
-        let status: OSStatus = SecPKCS12Import(PKCS12Data! as NSData, PKCS12options, &items)
-        guard status == errSecSuccess else {
-            XCTFail("Fail"); return nil
-        }
-        
-        guard items != nil else {
-            XCTFail("Fail"); return nil
-        }
-        
-        guard let dictArray = items as? [[String: AnyObject]] else {
-            XCTFail("Fail"); return nil
-        }
-        
-        func f<T>(key: CFString) -> T? {
-            for d in dictArray {
-                if let v = d[key as String] as? T {
-                    return v
-                }
-            }
-            return nil
-        }
-        
-        guard let identity: SecIdentity = f(key: kSecImportItemIdentity) else {
-            XCTFail("Fail"); return nil
-        }
-        
-        return identity
     }
 }
