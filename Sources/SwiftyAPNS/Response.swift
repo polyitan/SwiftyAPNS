@@ -12,13 +12,13 @@ import Foundation
 public enum APNSStatus: Int {
     case success = 200      // Success
     case badRequest = 400   // Bad request
-    case forbidden = 403    // There was an error with the certificate.
+    case forbidden = 403    // There was an error with the certificate or with the provider authentication token
     case methodNotAllowed = 405 // The request used a bad method value. Only POST requests are support
-    case unregistered = 410     // The device token is no longer active for the topic.
-    case payloadTooLarge = 413  // The notification payload was too large.
-    case tooManyRequests = 429  // The server received too many requests for the same device token.
+    case unregistered = 410     // The device token is no longer active for the topic
+    case payloadTooLarge = 413  // The notification payload was too large
+    case tooManyRequests = 429  // The server received too many requests for the same device token
     case internalServerError = 500  // Internal server error
-    case serviceUnavailable = 503   // The server is shutting down and unavailable.
+    case serviceUnavailable = 503   // The server is shutting down and unavailable
 }
 
 extension APNSStatus {

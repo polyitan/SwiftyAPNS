@@ -28,7 +28,7 @@ final class SwiftyAPNSTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-#if true
+#if false
         let plistData = readPropertyList("CertificateConfig")
         let pushCertPath = plistData[CertificateConfigKey.certPath]!
         let pushPassword = plistData[CertificateConfigKey.certPass]!

@@ -138,14 +138,14 @@ public struct APSLocalizedAlert: Encodable {
     /// Variable string values to appear in place of the format specifiers in subtitle-loc-key.
     public var subtitleLocArgs: [String]?
     
-    /// If a string is specified, the system displays an alert that includes the Close and View buttons.
-    public var actionLocKey: String?
-    
     /// A key to an alert-message string in a Localizable.strings file for the current localization.
     public var locKey: String?
     
     /// Variable string values to appear in place of the format specifiers in loc-key.
     public var locArgs: [String]?
+    
+    /// If a string is specified, the system displays an alert that includes the Close and View buttons.
+    public var actionLocKey: String?
     
     /// The filename of an image file in the app bundle.
     /// The image is used as the launch image when users tap the action button or move the action slider.
@@ -160,9 +160,9 @@ public struct APSLocalizedAlert: Encodable {
         case titleLocArgs = "title-loc-args"
         case subtitleLocKey = "subtitle-loc-key"
         case subtitleLocArgs = "subtitle-loc-args"
-        case actionLocKey = "action-loc-key"
         case locKey  = "loc-key"
         case locArgs = "loc-args"
+        case actionLocKey = "action-loc-key"
         case launchImage = "launch-image"
     }
 }
