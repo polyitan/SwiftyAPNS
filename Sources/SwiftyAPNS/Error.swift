@@ -24,27 +24,27 @@ public enum APNSError: Error {
     case MissingTopic
     case PayloadEmpty
     case TopicDisallowed
-    ///Status code 403
+    /// Status code 403
     case BadCertificate
     case BadCertificateEnvironment
     case ExpiredProviderToken
     case Forbidden
     case InvalidProviderToken
     case MissingProviderToken
-    ///Status code 404
+    /// Status code 404
     case BadPath
-    ///Status code 405
+    /// Status code 405
     case MethodNotAllowed
-    ///Status code 410
+    /// Status code 410
     case Unregistered
-    ///Status code 413
+    /// Status code 413
     case PayloadTooLarge
-    ///Status code 429
+    /// Status code 429
     case TooManyProviderTokenUpdates
     case TooManyRequests
-    ///Status code 500
+    /// Status code 500
     case InternalServerError
-    ///Status code 503
+    /// Status code 503
     case ServiceUnavailable
     case Shutdown
     

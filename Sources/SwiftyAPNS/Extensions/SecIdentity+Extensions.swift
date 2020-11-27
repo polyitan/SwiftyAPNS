@@ -6,7 +6,7 @@
 //  Copyright © 2020 Sergii Tkachenko. All rights reserved.
 //
 
-import Foundation
+import Security
 
 extension SecIdentity {
     public func name() -> String {

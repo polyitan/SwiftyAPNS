@@ -64,7 +64,6 @@ private struct APNSJwt: Codable {
     
     private let header: APNSJwtHeader
     private let payload: APNSJwtPayload
-    //private let digest: String
     
     private static let encoder = JSONEncoder()
     
