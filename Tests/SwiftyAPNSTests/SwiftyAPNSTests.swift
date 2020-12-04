@@ -15,8 +15,8 @@ enum CertificateConfigKey: String, StringEnum {
 
 enum KeyConfigKey: String, StringEnum {
     case keyPath = "KEY_PATH"
-    case keyId   = "KEY_ID"
-    case teamId  = "TEAM_ID"
+    case keyId  = "KEY_ID"
+    case teamId = "TEAM_ID"
     case token = "TOKEN"
     case topic = "TOPIC"
 }
@@ -28,7 +28,7 @@ final class SwiftyAPNSTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-#if false
+#if true
         let plistData = readPropertyList("CertificateConfig")
         let pushCertPath = plistData[CertificateConfigKey.certPath]!
         let pushPassword = plistData[CertificateConfigKey.certPass]!
@@ -36,11 +36,11 @@ final class SwiftyAPNSTests: XCTestCase {
         let identity = SecurityTools.identityFromPKCS12(PKCS12Data, password: pushPassword)
         switch identity {
         case .success(let info):
-            let type = getType(identity: info.identity)
+            let type = info.identity.type()
             if type == .Invalid {
                 XCTFail("Invalid Certificate type")
             }
-            let topics = getTopics(identity: info.identity)
+            let topics = info.identity.topics()
             print("Certificate topics:")
             for topic in topics {
                 print("\t\(topic)")

@@ -5,8 +5,8 @@ import PackageDescription
 let package = Package(
     name: "SwiftyAPNS",
     platforms: [
-        .iOS(.v14),
-        .macOS(.v11)
+        .iOS(.v12),
+        .macOS(.v10_13)
     ],
     products: [
         .library(name: "SwiftyAPNS", targets: ["SwiftyAPNS"])
