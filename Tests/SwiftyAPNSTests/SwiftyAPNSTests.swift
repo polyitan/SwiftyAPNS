@@ -36,15 +36,6 @@ final class SwiftyAPNSTests: XCTestCase {
         let identity = SecurityTools.identityFromPKCS12(PKCS12Data, password: pushPassword)
         switch identity {
         case .success(let info):
-            let type = info.identity.type()
-            if type == .Invalid {
-                XCTFail("Invalid Certificate type")
-            }
-            let topics = info.identity.topics()
-            print("Certificate topics:")
-            for topic in topics {
-                print("\t\(topic)")
-            }
             provider = APNSProvider.init(identity: info.identity)
         case .failure(let error):
             XCTFail(error.localizedDescription)
@@ -218,9 +209,8 @@ extension SwiftyAPNSTests {
     
     private func readPropertyList(_ name: String) -> [String: String] {
         var propertyListFormat = PropertyListSerialization.PropertyListFormat.xml
-        let bundle = Bundle(for: type(of: self))
-        let plistPath = bundle.path(forResource: name, ofType: "plist")!
-        let plistXML = FileManager.default.contents(atPath: plistPath)!
+        let plistPath = Bundle.module.url(forResource: name, withExtension: "plist")!
+        let plistXML = FileManager.default.contents(atPath: plistPath.path)!
         let plistData = try! PropertyListSerialization.propertyList(from: plistXML,
                                                                     options: .mutableContainersAndLeaves,
                                                                     format: &propertyListFormat) as! [String: String]

@@ -15,6 +15,7 @@ playground.xcworkspace
 # Package.pins
 # Package.resolved
 .build/
+.swiftpm/
 
 ## Other
 *.moved-aside

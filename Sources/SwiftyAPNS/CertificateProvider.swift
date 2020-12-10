@@ -29,7 +29,7 @@ private enum APNSCertificateProviderError: LocalizedError {
     }
 }
 
-open class APNSCertificateProvider: NSObject, APNSSendMessageProtocol {
+internal final class APNSCertificateProvider: NSObject, APNSSendMessageProtocol {
     
     private var identity: SecIdentity
     private var sesion: URLSession?
@@ -92,13 +92,13 @@ open class APNSCertificateProvider: NSObject, APNSSendMessageProtocol {
 }
 
 extension APNSCertificateProvider: URLSessionDelegate {
-    public func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
+    func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {
         if let error = error {
             print("Error: \(error)")
         }
     }
     
-    public func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Swift.Void) {
+    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Swift.Void) {
         var certificate: SecCertificate?
         _ = withUnsafeMutablePointer(to: &certificate) {
             SecIdentityCopyCertificate(self.identity, UnsafeMutablePointer($0))

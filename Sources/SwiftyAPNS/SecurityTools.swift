@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class SecurityTools {
+public final class SecurityTools {
     
     public typealias IdentityInfo = (identity: SecIdentity, label: String)
     public typealias Identity = Result<IdentityInfo, IdentityInfoReadError>

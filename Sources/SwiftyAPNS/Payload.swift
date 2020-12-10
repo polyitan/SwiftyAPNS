@@ -11,7 +11,7 @@ import Foundation
 /// Each remote notification includes a payload.
 /// The payload contains information about how the system should alert the user as well
 /// as any custom data you provide.
-public class APNSPayload: Encodable {
+open class APNSPayload: Encodable {
     public var aps: APS?
     
     public init(alert: APSAlert?, badge: Int?, sound: String?, contentAvailable: Int?, mutableContent: Int?, category: String?, threadId: String?) {

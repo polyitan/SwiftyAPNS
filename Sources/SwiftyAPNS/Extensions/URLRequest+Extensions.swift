@@ -8,8 +8,8 @@
 
 import Foundation
 
-extension URLRequest {
-    public mutating func applyOptions(_ options: APNSNotificationOptions) {
+internal extension URLRequest {
+    mutating func applyOptions(_ options: APNSNotificationOptions) {
         if let type = options.type {
             self.setValue("\(type)", forHTTPHeaderField: "apns-push-type")
         }

@@ -14,7 +14,17 @@ let package = Package(
     dependencies: [
     ],
     targets: [
-        .target(name: "SwiftyAPNS", dependencies: []),
-        .testTarget(name: "SwiftyAPNSTests", dependencies: [])
+        .target(
+            name: "SwiftyAPNS",
+            dependencies: []
+        ),
+        .testTarget(
+            name: "SwiftyAPNSTests",
+            dependencies: ["SwiftyAPNS"],
+            resources: [
+                .process("CertificateConfig.plist"),
+                .process("KeyConfig.plist")
+            ]
+        )
     ]
 )

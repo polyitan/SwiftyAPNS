@@ -9,14 +9,14 @@
 import Foundation
 import CommonCrypto
 
-public typealias ECPrivateKey = SecKey
+internal typealias ECPrivateKey = SecKey
 
-public enum ECPrivateKeyError: LocalizedError {
+internal enum ECPrivateKeyError: LocalizedError {
     
     case digestDataCorruption
     case keyNotSupportES256Signing
     
-    public var errorDescription: String? {
+    var errorDescription: String? {
         switch self {
         case .digestDataCorruption:
             return "Internal error."
@@ -26,8 +26,8 @@ public enum ECPrivateKeyError: LocalizedError {
     }
 }
 
-extension ECPrivateKey {
-    public func es256Sign(digest: String) throws -> String {
+internal extension ECPrivateKey {
+    func es256Sign(digest: String) throws -> String {
         guard let message = digest.data(using: .utf8) else {
             throw ECPrivateKeyError.digestDataCorruption
         }

@@ -8,11 +8,11 @@
 
 import Foundation
 
-public protocol APNSSendMessageProtocol {
+internal protocol APNSSendMessageProtocol {
     func push(_ notification: APNSNotification, completion: @escaping (Result<APNSResponse, Error>) -> Void)
 }
 
-public class APNSProvider {
+public final class APNSProvider {
     private var provider: APNSSendMessageProtocol
     
     public init(identity: SecIdentity, sandbox: Bool = true,

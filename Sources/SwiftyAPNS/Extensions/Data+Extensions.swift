@@ -8,13 +8,13 @@
 
 import Foundation
 
-public typealias ASN1 = Data
+internal typealias ASN1 = Data
 
-public enum ASN1Error: LocalizedError {
+internal enum ASN1Error: LocalizedError {
     
     case invalidAsn1
     
-    public var errorDescription: String? {
+    var errorDescription: String? {
         switch self {
         case .invalidAsn1:
             return "The ASN.1 data has invalid format."
@@ -22,7 +22,7 @@ public enum ASN1Error: LocalizedError {
     }
 }
 
-extension ASN1 {
+internal extension ASN1 {
     private indirect enum ASN1Element {
         case seq(elements: [ASN1Element])
         case integer(int: Int)
@@ -31,7 +31,7 @@ extension ASN1 {
         case unknown
     }
     
-    public func toECKeyData() throws -> ECKeyData {
+    func toECKeyData() throws -> ECKeyData {
         let (result, _) = self.toASN1Element()
 
         guard case let ASN1Element.seq(elements: es) = result,
@@ -51,16 +51,8 @@ extension ASN1 {
         return keyData
     }
 
-    // SecKeyCreateSignature seems to sometimes return a leading zero; strip it out
-    private func dropLeadingBytes() -> Data {
-        if self.count == 33 {
-            return self.dropFirst()
-        }
-        return self
-    }
-
     /// Convert an ASN.1 format EC signature returned by commoncrypto into a raw 64bit signature
-    public func toRawSignature() throws -> Data {
+    func toRawSignature() throws -> Data {
         let (result, _) = self.toASN1Element()
 
         guard case let ASN1Element.seq(elements: es) = result,
@@ -72,7 +64,15 @@ extension ASN1 {
         let rawSig =  sigR.dropLeadingBytes() + sigS.dropLeadingBytes()
         return rawSig
     }
-
+    
+    // SecKeyCreateSignature seems to sometimes return a leading zero; strip it out
+    private func dropLeadingBytes() -> Data {
+        if self.count == 33 {
+            return self.dropFirst()
+        }
+        return self
+    }
+    
     private func readLength() -> (Int, Int) {
         if self[0] & 0x80 == 0x00 { // short form
             return (Int(self[0]), 1)
@@ -136,10 +136,10 @@ extension ASN1 {
     }
 }
 
-public typealias ECKeyData = Data
+internal typealias ECKeyData = Data
 
-extension ECKeyData {
-    public func toPrivateKey() throws -> ECPrivateKey {
+internal extension ECKeyData {
+    func toPrivateKey() throws -> ECPrivateKey {
         var error: Unmanaged<CFError>? = nil
         guard let privateKey =
             SecKeyCreateWithData(self as CFData,
@@ -153,7 +153,7 @@ extension ECKeyData {
     }
 }
 
-extension Data {
+internal extension Data {
     func base64EncodedURLString() -> String {
         return base64EncodedString()
             .replacingOccurrences(of: "=", with: "")

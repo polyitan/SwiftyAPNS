@@ -10,7 +10,7 @@ import Foundation
 
 public typealias P8 = String
 
-public enum P8Error: LocalizedError {
+internal enum P8Error: LocalizedError {
     
     case invalidP8
     
@@ -22,9 +22,9 @@ public enum P8Error: LocalizedError {
     }
 }
 
-extension P8 {
+internal extension P8 {
     /// Convert PEM format .p8 file to DER-encoded ASN.1 data
-    public func toASN1() throws -> ASN1 {
+    func toASN1() throws -> ASN1 {
         let base64 = self
             .split(separator: "\n")
             .filter({ $0.hasPrefix("-----") == false })
