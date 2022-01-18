@@ -11,7 +11,7 @@ public class CustomPayload1: APNSPayload {
     public let acme1: String
     public let acme2: Int
 
-    public init (alert: APSAlert?, badge: Int?, sound: String?, category: String?, acme1: String, acme2: Int) {
+    public init (alert: APSAlert?, badge: Int?, sound: APSSound?, category: String?, acme1: String, acme2: Int) {
         self.acme1 = acme1
         self.acme2 = acme2
         super.init(alert: alert, badge: badge, sound: sound, contentAvailable: (alert == nil) ? 1 : nil, mutableContent: nil, category: category, threadId: nil)
@@ -40,7 +40,7 @@ public class CustomPayload2: APNSPayload {
 
     public let acme1: [String]
 
-    public init (alert: APSAlert?, badge: Int?, sound: String?, category: String?, acme1: [String]) {
+    public init (alert: APSAlert?, badge: Int?, sound: APSSound?, category: String?, acme1: [String]) {
         self.acme1 = acme1
         super.init(alert: alert, badge: badge, sound: sound, contentAvailable: (alert == nil) ? 1 : nil, mutableContent: nil, category: category, threadId: nil)
     }
@@ -60,7 +60,7 @@ public class CustomPayload3: APNSPayload {
 
     public let encrypted: String
 
-    public init (alert: APSAlert?, badge: Int?, sound: String?, category: String?, encrypted: String) {
+    public init (alert: APSAlert?, badge: Int?, sound: APSSound?, category: String?, encrypted: String) {
         self.encrypted = encrypted
         super.init(alert: alert, badge: badge, sound: sound, contentAvailable: nil, mutableContent: 1, category: category, threadId: nil)
     }

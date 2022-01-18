@@ -14,7 +14,7 @@ import Foundation
 open class APNSPayload: Encodable {
     public var aps: APS?
     
-    public init(alert: APSAlert?, badge: Int?, sound: String?, contentAvailable: Int?, mutableContent: Int?, category: String?, threadId: String?) {
+    public init(alert: APSAlert?, badge: Int?, sound: APSSound?, contentAvailable: Int?, mutableContent: Int?, category: String?, threadId: String?) {
         var aps = APS()
         aps.alert = alert
         aps.badge = badge
@@ -26,11 +26,11 @@ open class APNSPayload: Encodable {
         self.aps = aps
     }
     
-    public convenience init(alert: APSAlert?, badge: Int? = 0, sound: String? = "default") {
+    public convenience init(alert: APSAlert?, badge: Int? = 0, sound: APSSound? = APSSound.regular(sound: "default")) {
         self.init(alert: alert, badge: badge, sound: sound, contentAvailable: nil, mutableContent: nil, category: nil, threadId: nil)
     }
     
-    public convenience init(alert: APSAlert?, badge: Int? = 0, sound: String? = "default", category: String? = nil) {
+    public convenience init(alert: APSAlert?, badge: Int? = 0, sound: APSSound? = APSSound.regular(sound: "default"), category: String? = nil) {
         self.init(alert: alert, badge: badge, sound: sound, contentAvailable: nil, mutableContent: nil, category: category, threadId: nil)
     }
     
@@ -55,9 +55,8 @@ public struct APS: Encodable {
     /// The number to display as the badge of the app icon.
     public var badge: Int?
     
-    /// The name of a sound file in the app bundle or in the Library/Sounds folder of
-    /// the app’s data container.
-    public var sound: String?
+    /// The name of a sound file or dictionary that contains sound information for critical alerts.
+    public var sound: APSSound?
     
     /// Provide this key with a value of 1 to indicate that new content is available.
     public var contentAvailable: Int?
@@ -75,6 +74,13 @@ public struct APS: Encodable {
     // Provide this key with a value of the identifier of the window brought forward.
     public var targetContentId: String?
     
+    /// Provide this key with a value that indicates the importance and delivery timing of notification.
+    public var interruptionLevel: APSInterruptionLevel?
+
+    /// Provide this key with a value that the system uses to sort the notifications from your app.
+    /// A value between 0 and 1, the system uses to sort the notifications from your app.
+    public var relevanceScore: Double?
+    
     /// Keys that uses for encoding and decoding.
     private enum CodingKeys: String, CodingKey {
         case alert
@@ -85,20 +91,16 @@ public struct APS: Encodable {
         case category
         case threadId = "thread-id"
         case targetContentId = "target-content-id"
+        case interruptionLevel = "interruption-level"
+        case relevanceScore = "relevance-score"
     }
 }
 
 /// Can specify a string or a dictionary as the value of alert.
-public enum APSAlert {
-    case plain(
-        plain: String
-    )
-    case localized(
-        alert: APSLocalizedAlert
-    )
-}
-
-extension APSAlert: Encodable {
+public enum APSAlert: Encodable {
+    case plain(plain: String)
+    case localized(alert: APSLocalizedAlert)
+    
     public func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         switch self {
@@ -156,13 +158,64 @@ public struct APSLocalizedAlert: Encodable {
         case title
         case subtitle
         case body
-        case titleLocKey  = "title-loc-key"
+        case titleLocKey = "title-loc-key"
         case titleLocArgs = "title-loc-args"
         case subtitleLocKey = "subtitle-loc-key"
         case subtitleLocArgs = "subtitle-loc-args"
-        case locKey  = "loc-key"
+        case locKey = "loc-key"
         case locArgs = "loc-args"
         case actionLocKey = "action-loc-key"
         case launchImage = "launch-image"
+    }
+}
+
+/// Can specify a string or a dictionary as the value of alert.
+public enum APSSound: Encodable {
+    case regular(sound: String)
+    case critical(info: APSSoundInfo)
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch self {
+        case .regular(let sound):
+            try container.encode(sound)
+        case .critical(let info):
+            try container.encode(info)
+        }
+    }
+    
+    /// Keys that uses for encoding and decoding.
+    private enum CodingKeys: String, CodingKey {
+        case sound
+    }
+}
+
+/// Child properties of the sound property.
+public struct APSSoundInfo: Encodable {
+    /// The flag that enables the critical alert.
+    public var critical: Bool?
+    
+    /// The name of a sound file in the app bundle or in the Library/Sounds folder of
+    /// the app’s data container.
+    public var name: String?
+    
+    /// The volume for the critical alert’s sound.
+    /// Set this to a value between 0 (silent) and 1 (full volume).
+    public var volume: Double?
+}
+
+/// The value indicates the importance and delivery timing of notification..
+public enum APSInterruptionLevel: Encodable {
+    case passive
+    case active
+    case timeSensitive
+    case critical
+    
+    /// Keys that uses for encoding and decoding.
+    enum CodingKeys: String, CodingKey {
+        case passive
+        case active
+        case timeSensitive = "time-sensitive"
+        case critical
     }
 }

@@ -11,116 +11,116 @@ import Foundation
 /// The APNS reasons.
 public enum APNSError: Error {
     /// Status code 400
-    case BadCollapseId
-    case BadDeviceToken
-    case BadExpirationDate
-    case BadMessageId
-    case BadPriority
-    case BadTopic
-    case DeviceTokenNotForTopic
-    case DuplicateHeaders
-    case IdleTimeout
-    case MissingDeviceToken
-    case MissingTopic
-    case PayloadEmpty
-    case TopicDisallowed
+    case badCollapseId
+    case badDeviceToken
+    case badExpirationDate
+    case badMessageId
+    case badPriority
+    case badTopic
+    case deviceTokenNotForTopic
+    case duplicateHeaders
+    case idleTimeout
+    case missingDeviceToken
+    case missingTopic
+    case payloadEmpty
+    case topicDisallowed
     /// Status code 403
-    case BadCertificate
-    case BadCertificateEnvironment
-    case ExpiredProviderToken
-    case Forbidden
-    case InvalidProviderToken
-    case MissingProviderToken
+    case badCertificate
+    case badCertificateEnvironment
+    case expiredProviderToken
+    case forbidden
+    case invalidProviderToken
+    case missingProviderToken
     /// Status code 404
-    case BadPath
+    case badPath
     /// Status code 405
-    case MethodNotAllowed
+    case methodNotAllowed
     /// Status code 410
-    case Unregistered
+    case unregistered
     /// Status code 413
-    case PayloadTooLarge
+    case payloadTooLarge
     /// Status code 429
-    case TooManyProviderTokenUpdates
-    case TooManyRequests
+    case tooManyProviderTokenUpdates
+    case tooManyRequests
     /// Status code 500
-    case InternalServerError
+    case internalServerError
     /// Status code 503
-    case ServiceUnavailable
-    case Shutdown
+    case serviceUnavailable
+    case shutdown
     
     public var description: String {
         switch self {
-        case .BadCollapseId: return
+        case .badCollapseId: return
             "The collapse identifier exceeds the maximum allowed size"
-        case .BadDeviceToken: return
+        case .badDeviceToken: return
             """
             The specified device token was bad. Verify that the request contains a valid
             token and that the token matches the environment
             """
-        case .BadExpirationDate: return
+        case .badExpirationDate: return
             "The apns-expiration value is bad"
-        case .BadMessageId: return
+        case .badMessageId: return
             "The apns-id value is bad"
-        case .BadPriority: return
+        case .badPriority: return
             "The apns-priority value is bad"
-        case .BadTopic: return
+        case .badTopic: return
             "The apns-topic was invalid"
-        case .DeviceTokenNotForTopic: return
+        case .deviceTokenNotForTopic: return
             "The device token does not match the specified topic"
-        case .DuplicateHeaders: return
+        case .duplicateHeaders: return
             "One or more headers were repeated"
-        case .IdleTimeout: return
+        case .idleTimeout: return
             "Idle time out"
-        case .MissingDeviceToken: return
+        case .missingDeviceToken: return
             """
             The device token is not specified in the request :path. Verify that the :path
             header contains the device token
             """
-        case .MissingTopic: return
+        case .missingTopic: return
             """
             "The apns-topic header of the request was not specified and was required. The
             apns-topic header is mandatory when the client is connected using a certificate
             that supports multiple topics
             """
-        case .PayloadEmpty: return
+        case .payloadEmpty: return
             "The message payload was empty"
-        case .TopicDisallowed: return
+        case .topicDisallowed: return
             "Pushing to this topic is not allowed"
-        case .BadCertificate: return
+        case .badCertificate: return
             "The certificate was bad"
-        case .BadCertificateEnvironment: return
+        case .badCertificateEnvironment: return
             "The client certificate was for the wrong environment"
-        case .ExpiredProviderToken: return
+        case .expiredProviderToken: return
             "The provider token is stale and a new token should be generated"
-        case .Forbidden: return
+        case .forbidden: return
             "The specified action is not allowed"
-        case .InvalidProviderToken: return
+        case .invalidProviderToken: return
             "The provider token is not valid or the token signature could not be verified"
-        case .MissingProviderToken: return
+        case .missingProviderToken: return
             """
             No provider certificate was used to connect to APNs and Authorization header
             was missing or no provider token was specified
             """
-        case .BadPath: return
+        case .badPath: return
             "The request contained a bad :path value"
-        case .MethodNotAllowed: return
+        case .methodNotAllowed: return
             "The specified :method was not POST"
-        case .Unregistered: return
+        case .unregistered: return
             "The device token is inactive for the specified topic"
-        case .PayloadTooLarge: return
+        case .payloadTooLarge: return
             """
             The message payload was too large.
             The maximum payload size is 4096 bytes
             """
-        case .TooManyProviderTokenUpdates: return
+        case .tooManyProviderTokenUpdates: return
             "The provider token is being updated too often"
-        case .TooManyRequests: return
+        case .tooManyRequests: return
             "Too many requests were made consecutively to the same device token"
-        case .InternalServerError: return
+        case .internalServerError: return
             "An internal server error occurred"
-        case .ServiceUnavailable: return
+        case .serviceUnavailable: return
             "The service is unavailable"
-        case .Shutdown: return
+        case .shutdown: return
             "The server is shutting down"
         }
     }
@@ -133,61 +133,61 @@ extension APNSError: Decodable {
         let reason = try container.decode(String.self, forKey: .reason)
         switch reason {
         case "BadCollapseId":
-            self = .BadCollapseId
+            self = .badCollapseId
         case "BadDeviceToken":
-            self = .BadDeviceToken
+            self = .badDeviceToken
         case "BadExpirationDate":
-            self = .BadExpirationDate
+            self = .badExpirationDate
         case "BadMessageId":
-            self = .BadMessageId
+            self = .badMessageId
         case "BadPriority":
-            self = .BadPriority
+            self = .badPriority
         case "BadTopic":
-            self = .BadTopic
+            self = .badTopic
         case "DeviceTokenNotForTopic":
-            self = .DeviceTokenNotForTopic
+            self = .deviceTokenNotForTopic
         case "DuplicateHeaders":
-            self = .DuplicateHeaders
+            self = .duplicateHeaders
         case "IdleTimeout":
-            self = .IdleTimeout
+            self = .idleTimeout
         case "MissingDeviceToken":
-            self = .MissingDeviceToken
+            self = .missingDeviceToken
         case "MissingTopic":
-            self = .MissingTopic
+            self = .missingTopic
         case "PayloadEmpty":
-            self = .PayloadEmpty
+            self = .payloadEmpty
         case "TopicDisallowed":
-            self = .TopicDisallowed
+            self = .topicDisallowed
         case "BadCertificate":
-            self = .BadCertificate
+            self = .badCertificate
         case "BadCertificateEnvironment":
-            self = .BadCertificateEnvironment
+            self = .badCertificateEnvironment
         case "ExpiredProviderToken":
-            self = .ExpiredProviderToken
+            self = .expiredProviderToken
         case "Forbidden":
-            self = .Forbidden
+            self = .forbidden
         case "InvalidProviderToken":
-            self = .InvalidProviderToken
+            self = .invalidProviderToken
         case "MissingProviderToken":
-            self = .MissingProviderToken
+            self = .missingProviderToken
         case "BadPath":
-            self = .BadPath
+            self = .badPath
         case "MethodNotAllowed":
-            self = .MethodNotAllowed
+            self = .methodNotAllowed
         case "Unregistered":
-            self = .Unregistered
+            self = .unregistered
         case "PayloadTooLarge":
-            self = .PayloadTooLarge
+            self = .payloadTooLarge
         case "TooManyProviderTokenUpdates":
-            self = .TooManyProviderTokenUpdates
+            self = .tooManyProviderTokenUpdates
         case "TooManyRequests":
-            self = .TooManyRequests
+            self = .tooManyRequests
         case "InternalServerError":
-            self = .InternalServerError
+            self = .internalServerError
         case "ServiceUnavailable":
-            self = .ServiceUnavailable
+            self = .serviceUnavailable
         case "Shutdown":
-            self = .Shutdown
+            self = .shutdown
         default:
             throw CodingError.unknownValue
         }
