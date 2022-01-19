@@ -23,7 +23,7 @@ internal final class APNSKeyProvider: APNSSendMessageProtocol {
         self.sesion = URLSession.init(configuration: configuration, delegate: nil, delegateQueue: qeue)
     }
     
-    public func push(_ notification: APNSNotification, completion: @escaping (Result<APNSResponse, Error>) -> Void) {
+    public func push<P: Payloadable>(_ notification: APNSNotification<P>, completion: @escaping (Result<APNSResponse, Error>) -> Void) {
         
         let options = notification.options
         var components = URLComponents()

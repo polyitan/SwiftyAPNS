@@ -16,7 +16,7 @@ let provider = APNSProvider.init(p8: keyP8, keyId: keyId, teamId: teamId, issued
 Plain payload:
 
 ```swift
-let plain = APNSPayload(alert: APSAlert.plain(plain: "Plain notification."))
+let plain = APNSPayload(alert: .plain(plain: "Plain notification."))
 ```
 Localized payload:
 
@@ -25,7 +25,7 @@ var alert = APSLocalizedAlert()
 alert.title = "Title"
 alert.subtitle = "Subtitle"
 alert.body = "Localized notification body."
-let localized = APNSPayload(alert: APSAlert.localized(alert: alert))
+let localized = APNSPayload(alert: .localized(alert: alert))
 ```
 
 ### Notification example

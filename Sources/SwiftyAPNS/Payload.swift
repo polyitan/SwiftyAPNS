@@ -8,13 +8,36 @@
 
 import Foundation
 
+public protocol Payloadable: Encodable {
+    var aps: APS? { get set }
+}
+
 /// Each remote notification includes a payload.
 /// The payload contains information about how the system should alert the user as well
 /// as any custom data you provide.
-open class APNSPayload: Encodable {
+public struct APNSPayload: Payloadable {
     public var aps: APS?
+}
+
+extension APNSPayload {
+    public init(alert: APSAlert?) {
+        var aps = APS()
+        aps.alert = alert
+        aps.badge = 0
+        aps.sound = .regular(sound: "default")
+        self.aps = aps
+    }
     
-    public init(alert: APSAlert?, badge: Int?, sound: APSSound?, contentAvailable: Int?, mutableContent: Int?, category: String?, threadId: String?) {
+    public init(alert: APSAlert?, badge: Int?, sound: APSSound? = .regular(sound: "default"), category: String? = nil) {
+        var aps = APS()
+        aps.alert = alert
+        aps.badge = badge
+        aps.sound = sound
+        aps.category = category
+        self.aps = aps
+    }
+    
+    public init(alert: APSAlert?, badge: Int?, sound: APSSound?, contentAvailable: Int? = nil, mutableContent: Int? = nil, category: String? = nil, threadId: String? = nil, targetContentId: String? = nil, interruptionLevel: APSInterruptionLevel? = nil, relevanceScore: Double? = nil) {
         var aps = APS()
         aps.alert = alert
         aps.badge = badge
@@ -23,23 +46,10 @@ open class APNSPayload: Encodable {
         aps.mutableContent = mutableContent
         aps.category = category
         aps.threadId = threadId
+        aps.targetContentId = targetContentId
+        aps.interruptionLevel = interruptionLevel
+        aps.relevanceScore = relevanceScore
         self.aps = aps
-    }
-    
-    public convenience init(alert: APSAlert?, badge: Int? = 0, sound: APSSound? = APSSound.regular(sound: "default")) {
-        self.init(alert: alert, badge: badge, sound: sound, contentAvailable: nil, mutableContent: nil, category: nil, threadId: nil)
-    }
-    
-    public convenience init(alert: APSAlert?, badge: Int? = 0, sound: APSSound? = APSSound.regular(sound: "default"), category: String? = nil) {
-        self.init(alert: alert, badge: badge, sound: sound, contentAvailable: nil, mutableContent: nil, category: category, threadId: nil)
-    }
-    
-    public static var background: APNSPayload {
-        return APNSPayload(alert: nil, badge: nil, sound: nil, contentAvailable: 1, mutableContent: nil, category: nil, threadId: nil)
-    }
-    
-    public static var mutable: APNSPayload {
-        return APNSPayload(alert: nil, badge: nil, sound: nil, contentAvailable: 0, mutableContent: 1, category: nil, threadId: nil)
     }
 }
 
@@ -93,6 +103,16 @@ public struct APS: Encodable {
         case targetContentId = "target-content-id"
         case interruptionLevel = "interruption-level"
         case relevanceScore = "relevance-score"
+    }
+}
+
+extension APS {
+    public static var background: APS {
+        return APS(alert: nil, badge: nil, sound: nil, contentAvailable: 1, mutableContent: nil, category: nil, threadId: nil, targetContentId: nil, interruptionLevel: nil, relevanceScore: nil)
+    }
+    
+    public static var mutable: APS {
+        return APS(alert: nil, badge: nil, sound: nil, contentAvailable: 0, mutableContent: 1, category: nil, threadId: nil, targetContentId: nil, interruptionLevel: nil, relevanceScore: nil)
     }
 }
 

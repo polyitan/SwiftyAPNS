@@ -9,7 +9,7 @@
 import Foundation
 
 internal protocol APNSSendMessageProtocol {
-    func push(_ notification: APNSNotification, completion: @escaping (Result<APNSResponse, Error>) -> Void)
+    func push<P: Payloadable>(_ notification: APNSNotification<P>, completion: @escaping (Result<APNSResponse, Error>) -> Void)
 }
 
 public final class APNSProvider {
@@ -29,7 +29,7 @@ public final class APNSProvider {
         self.provider = APNSKeyProvider(p8: p8, keyId: keyId, teamId: teamId, issuedAt: issuedAt, sandbox: sandbox, configuration: configuration, qeue: qeue)
     }
     
-    public func push(_ notification: APNSNotification, completion: @escaping (Result<APNSResponse, Error>) -> Void) {
+    public func push<P: Payloadable>(_ notification: APNSNotification<P>, completion: @escaping (Result<APNSResponse, Error>) -> Void) {
         self.provider.push(notification, completion: completion)
     }
 }

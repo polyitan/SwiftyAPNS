@@ -57,7 +57,7 @@ final class SwiftyAPNSTests: XCTestCase {
     }
     
     func testAlertPushExample() {
-        let payload = APNSPayload(alert: APSAlert.plain(plain: "Test Alert notification."))
+        let payload = APNSPayload(alert: .plain(plain: "Test Alert notification."))
         var options = APNSNotificationOptions.default
         options.type = .alert
         options.topic = topic
@@ -70,7 +70,7 @@ final class SwiftyAPNSTests: XCTestCase {
         alert.title = "Test"
         alert.subtitle = "Alert notification"
         alert.body = "with subtitle."
-        let payload = APNSPayload(alert: APSAlert.localized(alert: alert))
+        let payload = APNSPayload(alert: .localized(alert: alert))
         var options = APNSNotificationOptions.default
         options.type = .alert
         options.topic = topic
@@ -83,7 +83,7 @@ final class SwiftyAPNSTests: XCTestCase {
         let REQUEST_FORMAT = "Frends: %@, %@"
         alert.locKey = REQUEST_FORMAT
         alert.locArgs = ["Jenna", "Frank"]
-        let payload = APNSPayload(alert: APSAlert.localized(alert: alert))
+        let payload = APNSPayload(alert: .localized(alert: alert))
         var options = APNSNotificationOptions.default
         options.type = .alert
         options.topic = topic
@@ -120,7 +120,7 @@ final class SwiftyAPNSTests: XCTestCase {
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
         sendPushNotification(notification)
     }
-    
+
     func testLocalizableAlertPushWithCustomPayloadExample2() {
         var alert = APSLocalizedAlert()
         alert.body = "Test Alert with custom payload notification."
@@ -135,17 +135,7 @@ final class SwiftyAPNSTests: XCTestCase {
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
         sendPushNotification(notification)
     }
-    
-    func testBackgroundPushExample() {
-        let payload = CustomPayload1(acme1: "bar", acme2: 42)
-        var options = APNSNotificationOptions.default
-        options.type = .alert//.voip
-        options.topic = topic
-        //options.environment = .production
-        let notification = APNSNotification.init(payload: payload, token: token, options: options)
-        sendPushNotification(notification)
-    }
-    
+
     func testModifyingContentPushExample() {
         var alert = APSLocalizedAlert()
         alert.body = "Test mutable conten payload notification."
@@ -160,6 +150,16 @@ final class SwiftyAPNSTests: XCTestCase {
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
         sendPushNotification(notification)
     }
+    
+    func testBackgroundPushExample() {
+        let payload = CustomPayload4(acme1: "bar", acme2: 42)
+        var options = APNSNotificationOptions.default
+        options.type = .alert//.voip
+        options.topic = topic
+        //options.environment = .production
+        let notification = APNSNotification.init(payload: payload, token: token, options: options)
+        sendPushNotification(notification)
+    }
 
     static var allTests = [
         ("testAlertPushExample", testAlertPushExample),
@@ -168,13 +168,13 @@ final class SwiftyAPNSTests: XCTestCase {
         ("testAlertWithCustomActionsPushExample", testAlertWithCustomActionsPushExample),
         ("testLocalizableAlertPushWithCustomPayloadExample1", testLocalizableAlertPushWithCustomPayloadExample1),
         ("testLocalizableAlertPushWithCustomPayloadExample2", testLocalizableAlertPushWithCustomPayloadExample2),
-        ("testBackgroundPushExample", testBackgroundPushExample),
-        ("testModifyingContentPushExample", testModifyingContentPushExample)
+//        ("testModifyingContentPushExample", testModifyingContentPushExample),
+        ("testBackgroundPushExample", testBackgroundPushExample)
     ]
 }
 
 extension SwiftyAPNSTests {
-    private func sendPushNotification(_ notification: APNSNotification) {
+    private func sendPushNotification<P: Payloadable>(_ notification: APNSNotification<P>) {
 #if true
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted

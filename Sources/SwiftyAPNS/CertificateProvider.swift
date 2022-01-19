@@ -40,7 +40,7 @@ internal final class APNSCertificateProvider: NSObject, APNSSendMessageProtocol 
         self.sesion = URLSession.init(configuration: configuration, delegate: self, delegateQueue: qeue)
     }
     
-    public func push(_ notification: APNSNotification, completion: @escaping (Result<APNSResponse, Error>) -> Void) {
+    public func push<P: Payloadable>(_ notification: APNSNotification<P>, completion: @escaping (Result<APNSResponse, Error>) -> Void) {
         
         let options = notification.options
         var components = URLComponents()

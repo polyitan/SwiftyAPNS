@@ -8,9 +8,9 @@
 
 import Foundation
 
-public struct APNSNotification {
+public struct APNSNotification<Payload: Payloadable> {
     /// The Remote Notification Payload.
-    public var payload: APNSPayload
+    public var payload: Payload
     
     /// Specify the hexadecimal string of the device token for the target device.
     public var token: String
@@ -18,7 +18,7 @@ public struct APNSNotification {
     /// The optional settings for the notification
     public var options: APNSNotificationOptions
     
-    public init(payload: APNSPayload, token: String, options: APNSNotificationOptions = APNSNotificationOptions.default) {
+    public init(payload: Payload, token: String, options: APNSNotificationOptions = APNSNotificationOptions.default) {
         self.payload = payload
         self.token = token
         self.options = options
