@@ -6,8 +6,6 @@
 //  Copyright © 2017 Sergii Tkachenko. All rights reserved.
 //
 
-import Foundation
-
 /// The HTTP status code.
 public enum APNSStatus: Int {
     case success = 200      // Success

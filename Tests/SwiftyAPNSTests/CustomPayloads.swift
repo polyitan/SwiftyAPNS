@@ -3,7 +3,6 @@
 //  SwiftyAPNSTests
 //
 
-import Foundation
 @testable import SwiftyAPNS
 
 public struct CustomPayload1: Payloadable {

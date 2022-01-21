@@ -6,8 +6,6 @@
 //  Copyright © 2017 Sergii Tkachenko. All rights reserved.
 //
 
-import Foundation
-
 /// The APNS reasons.
 public enum APNSError: Error {
     /// Status code 400

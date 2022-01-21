@@ -6,8 +6,6 @@
 //  Copyright © 2017 Sergii Tkachenko. All rights reserved.
 //
 
-import Foundation
-
 public struct APNSNotification<Payload: Payloadable> {
     /// The Remote Notification Payload.
     public var payload: Payload

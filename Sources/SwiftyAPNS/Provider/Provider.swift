@@ -8,13 +8,15 @@
 
 import Foundation
 
-internal protocol APNSSendMessageProtocol {
-    func push<P: Payloadable>(_ notification: APNSNotification<P>, completion: @escaping (Result<APNSResponse, Error>) -> Void)
+public struct APNSProvider {
+    private let provider: APNSSendMessageProtocol
+    
+    public func push<P: Payloadable>(_ notification: APNSNotification<P>, completion: @escaping (Result<APNSResponse, Error>) -> Void) {
+        self.provider.push(notification, completion: completion)
+    }
 }
 
-public final class APNSProvider {
-    private var provider: APNSSendMessageProtocol
-    
+extension APNSProvider {
     public init(identity: SecIdentity, sandbox: Bool = true,
                 configuration: URLSessionConfiguration = URLSessionConfiguration.default,
                 qeue: OperationQueue = OperationQueue.main)
@@ -27,9 +29,5 @@ public final class APNSProvider {
                 qeue: OperationQueue = OperationQueue.main)
     {
         self.provider = APNSKeyProvider(p8: p8, keyId: keyId, teamId: teamId, issuedAt: issuedAt, sandbox: sandbox, configuration: configuration, qeue: qeue)
-    }
-    
-    public func push<P: Payloadable>(_ notification: APNSNotification<P>, completion: @escaping (Result<APNSResponse, Error>) -> Void) {
-        self.provider.push(notification, completion: completion)
     }
 }

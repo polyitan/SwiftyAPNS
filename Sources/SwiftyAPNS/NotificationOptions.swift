@@ -6,8 +6,6 @@
 //  Copyright © 2017 Sergii Tkachenko. All rights reserved.
 //
 
-import Foundation
-
 /// Request headers.
 public struct APNSNotificationOptions {
     /// The value of this header must accurately reflect the contents of your notifications payload.
