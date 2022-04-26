@@ -21,8 +21,13 @@ enum KeyConfigKey: String, StringEnum {
     case topic = "TOPIC"
 }
 
+enum Notification {
+    case payload(notificatiuon: APNSNotification<APNSPayload>)
+    case payload4(notificatiuon: APNSNotification<CustomPayload4>)
+}
+
 final class SwiftyAPNSTests: XCTestCase {
-    private var provider: APNSProvider! = nil
+            var provider: APNSProvider! = nil
     private var token: String! = nil
     private var topic: String! = nil
     
@@ -40,7 +45,7 @@ final class SwiftyAPNSTests: XCTestCase {
         case .failure(let error):
             XCTFail(error.localizedDescription)
         }
-        
+
         token = plistData[CertificateConfigKey.token]!
         topic = plistData[CertificateConfigKey.topic]!
 #else
@@ -57,7 +62,7 @@ final class SwiftyAPNSTests: XCTestCase {
     }
     
     func testAlertPushExample() {
-        let payload = APNSPayload(alert: .plain(plain: "Test Alert notification."))
+        let payload = SwiftyAPNSTests.plainAlert
         var options = APNSNotificationOptions.default
         options.type = .alert
         options.topic = topic
@@ -66,11 +71,7 @@ final class SwiftyAPNSTests: XCTestCase {
     }
     
     func testAlertWithSubtitlePushExample() {
-        var alert = APSLocalizedAlert()
-        alert.title = "Test"
-        alert.subtitle = "Alert notification"
-        alert.body = "with subtitle."
-        let payload = APNSPayload(alert: .localized(alert: alert))
+        let payload = SwiftyAPNSTests.localizedAlert
         var options = APNSNotificationOptions.default
         options.type = .alert
         options.topic = topic
@@ -79,11 +80,7 @@ final class SwiftyAPNSTests: XCTestCase {
     }
     
     func testLocalizableAlertPushExample() {
-        var alert = APSLocalizedAlert()
-        let REQUEST_FORMAT = "Frends: %@, %@"
-        alert.locKey = REQUEST_FORMAT
-        alert.locArgs = ["Jenna", "Frank"]
-        let payload = APNSPayload(alert: .localized(alert: alert))
+        let payload = SwiftyAPNSTests.localizedAlert5
         var options = APNSNotificationOptions.default
         options.type = .alert
         options.topic = topic
@@ -92,12 +89,7 @@ final class SwiftyAPNSTests: XCTestCase {
     }
     
     func testAlertWithCustomActionsPushExample() {
-        var alert = APSLocalizedAlert()
-        alert.body = "Test Alert with custom action notification."
-        let payload = APNSPayload(alert: .localized(alert: alert),
-                                  badge: 1,
-                                  sound: .regular(sound: "default.wav"),
-                                  category: "MESSAGE_CATEGORY")
+        let payload = SwiftyAPNSTests.localizedAlert6
         var options = APNSNotificationOptions.default
         options.type = .alert
         options.topic = topic
@@ -106,14 +98,7 @@ final class SwiftyAPNSTests: XCTestCase {
     }
     
     func testLocalizableAlertPushWithCustomPayloadExample1() {
-        var alert = APSLocalizedAlert()
-        alert.body = "Test Alert with custom payload notification."
-        let payload = CustomPayload1(alert: .localized(alert: alert),
-                                     badge: 1,
-                                     sound: .regular(sound: "default.wav"),
-                                     category: "MESSAGE_CATEGORY",
-                                     acme1: "bar",
-                                     acme2: 42)
+        let payload = SwiftyAPNSTests.localizedCustomAlert1
         var options = APNSNotificationOptions.default
         options.type = .alert
         options.topic = topic
@@ -122,13 +107,7 @@ final class SwiftyAPNSTests: XCTestCase {
     }
 
     func testLocalizableAlertPushWithCustomPayloadExample2() {
-        var alert = APSLocalizedAlert()
-        alert.body = "Test Alert with custom payload notification."
-        let payload = CustomPayload2(alert: .localized(alert: alert),
-                                     badge: 1,
-                                     sound: .regular(sound: "default.wav"),
-                                     category: "MESSAGE_CATEGORY",
-                                     acme1: ["bang", "whiz"])
+        let payload = SwiftyAPNSTests.localizedCustomAlert2
         var options = APNSNotificationOptions.default
         options.type = .alert
         options.topic = topic
@@ -137,13 +116,7 @@ final class SwiftyAPNSTests: XCTestCase {
     }
 
     func testModifyingContentPushExample() {
-        var alert = APSLocalizedAlert()
-        alert.body = "Test mutable conten payload notification."
-        let payload = CustomPayload3(alert: .localized(alert: alert),
-                                     badge: 1,
-                                     sound: .regular(sound: "default.wav"),
-                                     category: "MESSAGE_CATEGORY",
-                                     encrypted: "Ω^¬%gq∞NÿÒQùw")
+        let payload = SwiftyAPNSTests.localizedCustomAlert3
         var options = APNSNotificationOptions.default
         options.type = .alert
         options.topic = topic
@@ -152,7 +125,7 @@ final class SwiftyAPNSTests: XCTestCase {
     }
     
     func testBackgroundPushExample() {
-        let payload = CustomPayload4(acme1: "bar", acme2: 42)
+        let payload = SwiftyAPNSTests.localizedCustomAlert4
         var options = APNSNotificationOptions.default
         options.type = .alert//.voip
         options.topic = topic
@@ -160,7 +133,23 @@ final class SwiftyAPNSTests: XCTestCase {
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
         sendPushNotification(notification)
     }
-
+    
+    func testSendingMultiplePushes() {
+        let plainNotification = APNSNotification.init(payload: SwiftyAPNSTests.plainAlert,
+                                                      token: token,
+                                                      options: APNSNotificationOptions.default)
+        let localizedNotification = APNSNotification.init(payload: SwiftyAPNSTests.localizedAlert5,
+                                                          token: token,
+                                                          options: APNSNotificationOptions.default)
+        let backgroundNotification = APNSNotification.init(payload: SwiftyAPNSTests.localizedCustomAlert4,
+                                                           token: token,
+                                                           options: APNSNotificationOptions.default)
+        let notificatiuons: [Notification] = [.payload(notificatiuon: plainNotification),
+            .payload(notificatiuon: localizedNotification),
+            .payload4(notificatiuon: backgroundNotification)]
+        notificatiuons.forEach(visit)
+    }
+    
     static var allTests = [
         ("testAlertPushExample", testAlertPushExample),
         ("testAlertWithSubtitlePushExample", testAlertWithSubtitlePushExample),
@@ -168,52 +157,7 @@ final class SwiftyAPNSTests: XCTestCase {
         ("testAlertWithCustomActionsPushExample", testAlertWithCustomActionsPushExample),
         ("testLocalizableAlertPushWithCustomPayloadExample1", testLocalizableAlertPushWithCustomPayloadExample1),
         ("testLocalizableAlertPushWithCustomPayloadExample2", testLocalizableAlertPushWithCustomPayloadExample2),
-//        ("testModifyingContentPushExample", testModifyingContentPushExample),
+        ("testModifyingContentPushExample", testModifyingContentPushExample),
         ("testBackgroundPushExample", testBackgroundPushExample)
     ]
-}
-
-extension SwiftyAPNSTests {
-    private func sendPushNotification<P: Payloadable>(_ notification: APNSNotification<P>) {
-#if true
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted
-        let encoded = try! encoder.encode(notification.payload)
-        print("Payload:\n\(String(data: encoded, encoding: .utf8)!)")
-#endif
-        
-        let expect = self.expectation(description: "APNSExpectation")
-        provider.push(notification) { (result) in
-            switch(result) {
-            case .success(let responce):
-                if let error = responce.reason {
-                    XCTFail(error.description)
-                } else {
-                    expect.fulfill()
-                }
-            case .failure(let error):
-                if let error = error as? LocalizedError {
-                    XCTFail(error.localizedDescription)
-                } else {
-                    XCTFail("Failure send push notification")
-                }
-            }
-        }
-        
-        self.waitForExpectations(timeout: 5.0) { (error) in
-            if let error = error {
-                XCTFail(error.localizedDescription)
-            }
-        }
-    }
-    
-    private func readPropertyList(_ name: String) -> [String: String] {
-        var propertyListFormat = PropertyListSerialization.PropertyListFormat.xml
-        let plistPath = Bundle.module.url(forResource: name, withExtension: "plist")!
-        let plistXML = FileManager.default.contents(atPath: plistPath.path)!
-        let plistData = try! PropertyListSerialization.propertyList(from: plistXML,
-                                                                    options: .mutableContainersAndLeaves,
-                                                                    format: &propertyListFormat) as! [String: String]
-        return plistData
-    }
 }
