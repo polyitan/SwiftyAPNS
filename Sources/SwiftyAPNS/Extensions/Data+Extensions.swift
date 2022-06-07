@@ -10,13 +10,15 @@ import Foundation
 
 internal typealias ASN1 = Data
 
-internal enum ASN1Error: LocalizedError {
+internal enum ASN1Error {
     
-    case invalidAsn1
-    
+    case invalidASN1
+}
+
+extension ASN1Error: LocalizedError {
     var errorDescription: String? {
         switch self {
-        case .invalidAsn1:
+        case .invalidASN1:
             return "The ASN.1 data has invalid format."
         }
     }
@@ -36,7 +38,7 @@ internal extension ASN1 {
 
         guard case let ASN1Element.seq(elements: es) = result,
             case let ASN1Element.bytes(data: privateOctest) = es[2] else {
-                throw ASN1Error.invalidAsn1
+                throw ASN1Error.invalidASN1
         }
 
         let (octest, _) = privateOctest.toASN1Element()
@@ -44,7 +46,7 @@ internal extension ASN1 {
             case let ASN1Element.bytes(data: privateKeyData) = seq[1],
             case let ASN1Element.constructed(tag: _, elem: publicElement) = seq[3],
             case let ASN1Element.bytes(data: publicKeyData) = publicElement else {
-                throw ASN1Error.invalidAsn1
+                throw ASN1Error.invalidASN1
         }
 
         let keyData = (publicKeyData.drop(while: { $0 == 0x00}) + privateKeyData)
@@ -54,13 +56,11 @@ internal extension ASN1 {
     /// Convert an ASN.1 format EC signature returned by commoncrypto into a raw 64bit signature
     func toRawSignature() throws -> Data {
         let (result, _) = self.toASN1Element()
-
         guard case let ASN1Element.seq(elements: es) = result,
             case let ASN1Element.bytes(data: sigR) = es[0],
             case let ASN1Element.bytes(data: sigS) = es[1] else {
-                throw ASN1Error.invalidAsn1
+                throw ASN1Error.invalidASN1
         }
-
         let rawSig =  sigR.dropLeadingBytes() + sigS.dropLeadingBytes()
         return rawSig
     }
@@ -106,7 +106,6 @@ internal extension ASN1 {
                 alreadyRead += l
             }
             return (.seq(elements: result), 1 + lengthOfLength + length)
-
         case 0x02: // integer
             let (length, lengthOfLength) = self.advanced(by: 1).readLength()
             if (length < 8) {
@@ -120,15 +119,12 @@ internal extension ASN1 {
             }
             // number is too large to fit in Int; return the bytes
             return (.bytes(data: self.subdata(in: (1 + lengthOfLength) ..< (1 + lengthOfLength + length))), 1 + lengthOfLength + length)
-
-
         case let s where (s & 0xe0) == 0xa0: // constructed
             let tag = Int(s & 0x1f)
             let (length, lengthOfLength) = self.advanced(by: 1).readLength()
             let subdata = self.advanced(by: 1 + lengthOfLength)
             let (e, _) = subdata.toASN1Element()
             return (.constructed(tag: tag, elem: e), 1 + lengthOfLength + length)
-
         default: // octet string
             let (length, lengthOfLength) = self.advanced(by: 1).readLength()
             return (.bytes(data: self.subdata(in: (1 + lengthOfLength) ..< (1 + lengthOfLength + length))), 1 + lengthOfLength + length)

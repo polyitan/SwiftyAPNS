@@ -8,14 +8,16 @@
 
 import Foundation
 
-internal enum APNSJwtProviderError: LocalizedError {
+internal enum APNSJwtProviderError {
     
     case badUrl
     case encodePayload
     case parseResponce
     case emptyData
-    
-    public var errorDescription: String? {
+}
+
+extension APNSJwtProviderError: LocalizedError {
+    var errorDescription: String? {
         switch self {
         case .badUrl: return
             "The url was invalid"

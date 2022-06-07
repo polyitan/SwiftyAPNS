@@ -33,7 +33,7 @@ final class SwiftyAPNSTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-#if true
+#if false
         let plistData = readPropertyList("CertificateConfig")
         let pushCertPath = plistData[CertificateConfigKey.certPath]!
         let pushPassword = plistData[CertificateConfigKey.certPass]!
@@ -127,7 +127,7 @@ final class SwiftyAPNSTests: XCTestCase {
     func testBackgroundPushExample() {
         let payload = SwiftyAPNSTests.localizedCustomAlert4
         var options = APNSNotificationOptions.default
-        options.type = .alert//.voip
+        options.type = .background
         options.topic = topic
         //options.environment = .production
         let notification = APNSNotification.init(payload: payload, token: token, options: options)
@@ -135,19 +135,37 @@ final class SwiftyAPNSTests: XCTestCase {
     }
     
     func testSendingMultiplePushes() {
+        var options = APNSNotificationOptions.default
+        options.type = .alert
+        options.topic = topic
         let plainNotification = APNSNotification.init(payload: SwiftyAPNSTests.plainAlert,
                                                       token: token,
-                                                      options: APNSNotificationOptions.default)
+                                                      options: options)
         let localizedNotification = APNSNotification.init(payload: SwiftyAPNSTests.localizedAlert5,
                                                           token: token,
-                                                          options: APNSNotificationOptions.default)
+                                                          options: options)
+        var backgroundOptions = APNSNotificationOptions.default
+        backgroundOptions.type = .background
+        backgroundOptions.topic = topic
         let backgroundNotification = APNSNotification.init(payload: SwiftyAPNSTests.localizedCustomAlert4,
                                                            token: token,
                                                            options: APNSNotificationOptions.default)
-        let notificatiuons: [Notification] = [.payload(notificatiuon: plainNotification),
+        let notifications: [Notification] = [.payload(notificatiuon: plainNotification),
             .payload(notificatiuon: localizedNotification),
             .payload4(notificatiuon: backgroundNotification)]
-        notificatiuons.forEach(visit)
+        notifications.forEach(visit)
+        
+//        let notificationss: [APNSNotification] = [plainNotification, localizedNotification, backgroundNotification]
+//        notificationss.forEach { notification in
+//            print(notification.token)
+//        }
+// vs
+//        let payloads: [Payloadable] = [SwiftyAPNSTests.plainAlert,
+//                        SwiftyAPNSTests.localizedAlert5,
+//                        SwiftyAPNSTests.localizedCustomAlert4]
+//        payloads.forEach { payload in
+//            print(payload.aps?.badge ?? 555)
+//        }
     }
     
     static var allTests = [

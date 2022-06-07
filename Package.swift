@@ -9,7 +9,10 @@ let package = Package(
         .macOS(.v10_13)
     ],
     products: [
-        .library(name: "SwiftyAPNS", targets: ["SwiftyAPNS"])
+        .library(
+            name: "SwiftyAPNS",
+            targets: ["SwiftyAPNS"]
+        )
     ],
     dependencies: [
     ],

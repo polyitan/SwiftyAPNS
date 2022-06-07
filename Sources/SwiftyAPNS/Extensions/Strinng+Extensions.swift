@@ -10,10 +10,12 @@ import Foundation
 
 public typealias P8 = String
 
-internal enum P8Error: LocalizedError {
+internal enum P8Error {
     
     case invalidP8
-    
+}
+
+extension P8Error: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .invalidP8:
@@ -29,7 +31,6 @@ internal extension P8 {
             .split(separator: "\n")
             .filter({ $0.hasPrefix("-----") == false })
             .joined(separator: "")
-
         guard let asn1 = Data(base64Encoded: base64) else {
             throw P8Error.invalidP8
         }

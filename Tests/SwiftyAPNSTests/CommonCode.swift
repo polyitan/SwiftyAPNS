@@ -3,8 +3,6 @@
 //  SwiftyAPNSTests
 //
 
-@testable import SwiftyAPNS
-
 protocol StringEnum {
     var rawValue: String { get }
 }

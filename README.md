@@ -49,10 +49,8 @@ provider.push(notification) { (result) in
     case .success(let responce):
         if let error = responce.reason {
             // Push Notification failure
-            debugPrint("Error: \(error.description)")
         } else {
             // Push Notification was successfully sent
-            debugPrint("The apns-id: \(responce.apnsId)")
         }
     case .failure(let error):
         // Push Notification failure

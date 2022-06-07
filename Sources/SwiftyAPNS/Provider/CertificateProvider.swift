@@ -47,6 +47,7 @@ internal final class APNSCertificateProvider: NSObject, APNSSendMessageProtocol 
         components.scheme = "https"
         components.host = options.url
         components.path = "/3/device/\(notification.token)"
+        
         guard let url = components.url else {
             completion(.failure(APNSCertificateProviderError.badUrl))
             return

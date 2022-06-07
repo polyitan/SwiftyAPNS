@@ -22,3 +22,5 @@ playground.xcworkspace
 *.xccheckout
 *.xcscmblueprint
 xcuserdata/
+.DS_Store
+

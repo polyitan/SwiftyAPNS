@@ -19,7 +19,7 @@ extension SwiftyAPNSTests {
             switch(result) {
             case .success(let responce):
                 if let error = responce.reason {
-                    XCTFail(error.description)
+                    XCTFail(error.errorDescription ?? "Failure send push notification")
                 } else {
                     expect.fulfill()
                 }
@@ -32,7 +32,7 @@ extension SwiftyAPNSTests {
             }
         }
         
-        self.waitForExpectations(timeout: 5.0) { (error) in
+        self.waitForExpectations(timeout: 30.0) { (error) in
             if let error = error {
                 XCTFail(error.localizedDescription)
             }

@@ -6,6 +6,8 @@
 //  Copyright © 2017 Sergii Tkachenko. All rights reserved.
 //
 
+import Foundation
+
 /// The APNS reasons.
 public enum APNSError: Error {
     /// Status code 400
@@ -45,8 +47,10 @@ public enum APNSError: Error {
     /// Status code 503
     case serviceUnavailable
     case shutdown
-    
-    public var description: String {
+}
+
+extension APNSError: LocalizedError {
+    public var errorDescription: String? {
         switch self {
         case .badCollapseId: return
             "The collapse identifier exceeds the maximum allowed size"
