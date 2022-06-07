@@ -17,10 +17,13 @@ playground.xcworkspace
 .build/
 .swiftpm/
 
+## Test setup
+Tests/SwiftyAPNSTests/KeyConfig.plist
+Tests/SwiftyAPNSTests/CertificateConfig.plist
+
 ## Other
 *.moved-aside
 *.xccheckout
 *.xcscmblueprint
 xcuserdata/
 .DS_Store
-
