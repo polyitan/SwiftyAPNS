@@ -10,7 +10,7 @@ Before sending any pushes need to instantiate the APNs provider. For provider wi
 let keyP8 = <#Apple Auth Key (.p8) content#>
 let keyId = <#Apple Auth Key ID#>
 let teamId = <#Apple Developer Team ID#>
-let provider = APNSProvider.init(p8: keyP8, keyId: keyId, teamId: teamId, issuedAt: Date())
+let provider = APNSProvider.init(p8: keyP8, keyId: keyId, teamId: teamId)
 ```
 ### Payload examples
 Plain payload:

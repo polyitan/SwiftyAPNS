@@ -24,10 +24,10 @@ extension APNSProvider {
         self.provider = APNSCertificateProvider(identity: identity, sandbox: sandbox, configuration: configuration, qeue: qeue)
     }
     
-    public init(p8: P8, keyId: String, teamId: String, issuedAt: Date, sandbox: Bool = true,
+    public init(p8: P8, keyId: String, teamId: String, sandbox: Bool = true,
                 configuration: URLSessionConfiguration = URLSessionConfiguration.default,
                 qeue: OperationQueue = OperationQueue.main)
     {
-        self.provider = APNSKeyProvider(p8: p8, keyId: keyId, teamId: teamId, issuedAt: issuedAt, sandbox: sandbox, configuration: configuration, qeue: qeue)
+        self.provider = APNSKeyProvider(p8: p8, keyId: keyId, teamId: teamId, sandbox: sandbox, configuration: configuration, qeue: qeue)
     }
 }

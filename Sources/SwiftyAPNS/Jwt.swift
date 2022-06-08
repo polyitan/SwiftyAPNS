@@ -8,29 +8,6 @@
 
 import Foundation
 
-internal enum APNSJwtProviderError {
-    
-    case badUrl
-    case encodePayload
-    case parseResponce
-    case emptyData
-}
-
-extension APNSJwtProviderError: LocalizedError {
-    var errorDescription: String? {
-        switch self {
-        case .badUrl: return
-            "The url was invalid"
-        case .encodePayload: return
-            "Can't encode payload"
-        case .parseResponce: return
-            "Can't parse responce"
-        case .emptyData: return
-            "Empty data"
-        }
-    }
-}
-
 /// The token that you include with your notification requests uses the JSON Web Token (JWT) specification
 internal struct APNSJwt: Codable {
     

@@ -8,7 +8,7 @@ import XCTest
 
 extension SwiftyAPNSTests {
     func sendPushNotification<P: Payloadable>(_ notification: APNSNotification<P>) {
-#if true
+#if false
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         let encoded = try! encoder.encode(notification.payload)
@@ -21,6 +21,7 @@ extension SwiftyAPNSTests {
                 if let error = responce.reason {
                     XCTFail(error.errorDescription ?? "Failure send push notification")
                 } else {
+                    print("ApnsId: \(responce.apnsId)")
                     expect.fulfill()
                 }
             case .failure(let error):
@@ -31,7 +32,9 @@ extension SwiftyAPNSTests {
                 }
             }
         }
-        
+    }
+    
+    func waitForResponce() {
         self.waitForExpectations(timeout: 30.0) { (error) in
             if let error = error {
                 XCTFail(error.localizedDescription)
