@@ -7,5 +7,5 @@
 //
 
 internal protocol APNSSendMessageProtocol {
-    func push<P: Payloadable>(_ notification: APNSNotification<P>, completion: @escaping (Result<APNSResponse, Error>) -> Void)
+    func push<P: Payloadable>(_ notification: APNSNotification<P>) async throws -> APNSResponse
 }

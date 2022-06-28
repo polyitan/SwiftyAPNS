@@ -1,12 +1,12 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.6
 
 import PackageDescription
 
 let package = Package(
     name: "SwiftyAPNS",
     platforms: [
-        .iOS(.v12),
-        .macOS(.v10_13)
+        .iOS(.v13),
+        .macOS(.v12)
     ],
     products: [
         .library(

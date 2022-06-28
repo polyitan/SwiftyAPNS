@@ -7,47 +7,23 @@ import XCTest
 @testable import SwiftyAPNS
 
 extension SwiftyAPNSTests {
-    func sendPushNotification<P: Payloadable>(_ notification: APNSNotification<P>) {
+    func sendPushNotification<P: Payloadable>(_ notification: APNSNotification<P>) async throws {
 #if false
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         let encoded = try! encoder.encode(notification.payload)
         print("Payload:\n\(String(data: encoded, encoding: .utf8)!)")
 #endif
-        let expect = self.expectation(description: "APNSExpectation")
-        provider.push(notification) { (result) in
-            switch(result) {
-            case .success(let responce):
-                if let error = responce.reason {
-                    XCTFail(error.errorDescription ?? "Failure send push notification")
-                } else {
-                    print("ApnsId: \(responce.apnsId)")
-                    expect.fulfill()
-                }
-            case .failure(let error):
-                if let error = error as? LocalizedError {
-                    XCTFail(error.localizedDescription)
-                } else {
-                    XCTFail("Failure send push notification")
-                }
-            }
-        }
+        let responce = try await provider.push(notification)
+        XCTAssertNil(responce.reason)
     }
     
-    func waitForResponce() {
-        self.waitForExpectations(timeout: 30.0) { (error) in
-            if let error = error {
-                XCTFail(error.localizedDescription)
-            }
-        }
-    }
-    
-    func visit(notification: Notification) {
+    func visit(notification: Notification) async throws {
         switch notification {
         case .payload(let notificatiuon):
-            sendPushNotification(notificatiuon)
+            try await sendPushNotification(notificatiuon)
         case .payload4(let notificatiuon):
-            sendPushNotification(notificatiuon)
+            try await sendPushNotification(notificatiuon)
         }
     }
     

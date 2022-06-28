@@ -44,18 +44,12 @@ let notification = APNSNotification.init(payload: <#Notification Payload#>,
 The values in responses can be handled asynchronously.
 
 ```swift
-provider.push(notification) { (result) in
-    switch(result) {
-    case .success(let responce):
-        if let error = responce.reason {
-            // Push Notification failure
-        } else {
-            // Push Notification was successfully sent
-        }
-    case .failure(let error):
+    do {
+        let responce = try await provider.push(notification)
+        // Push Notification was successfully sent
+    } catch {
         // Push Notification failure
     }
-}
 ```
 
 ### [More examples](/Tests/SwiftyAPNSTests/SwiftyAPNSTests.swift)

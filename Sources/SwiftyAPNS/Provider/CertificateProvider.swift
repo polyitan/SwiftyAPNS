@@ -11,39 +11,26 @@ import Foundation
 internal final class APNSCertificateProvider: NSObject, APNSSendMessageProtocol {
     
     private var identity: SecIdentity
-    private var sesion: URLSession = URLSession.shared
+    private var session: URLSession = URLSession.shared
     
     private static let decoder = JSONDecoder()
     
-    public init(identity: SecIdentity, sandbox: Bool = true, configuration: URLSessionConfiguration = URLSessionConfiguration.default, qeue: OperationQueue = OperationQueue.main) {
+    public init(identity: SecIdentity, sandbox: Bool = true, configuration: URLSessionConfiguration = URLSessionConfiguration.default) {
         self.identity = identity
         super.init()
-        self.sesion = URLSession.init(configuration: configuration, delegate: self, delegateQueue: qeue)
+        self.session = URLSession.init(configuration: configuration, delegate: self, delegateQueue: nil)
     }
     
-    public func push<P: Payloadable>(_ notification: APNSNotification<P>, completion: @escaping (Result<APNSResponse, Error>) -> Void) {
-        do {
-            let request = try APNSRequestFactory.makeRequest(notification)
-            let task = self.sesion.dataTask(with: request) { (data, responce, error) in
-                if let error = error {
-                    completion(.failure(error))
-                } else if let responce = responce as? HTTPURLResponse, let data = data {
-                    if let apnsStatus = APNSStatus(code: responce.statusCode),
-                        let apnsId = responce.allHeaderFields["apns-id"] as? String
-                    {
-                        let reason = try? Self.decoder.decode(APNSError.self, from: data)
-                        let apnsResponce = APNSResponse(status: apnsStatus, apnsId: apnsId, reason: reason)
-                        completion(.success(apnsResponce))
-                    } else {
-                        completion(.failure(APNSProviderError.parseResponce))
-                    }
-                } else {
-                    completion(.failure(APNSProviderError.emptyData))
-                }
-            }
-            task.resume()
-        } catch {
-            completion(.failure(error))
+    public func push<P: Payloadable>(_ notification: APNSNotification<P>) async throws -> APNSResponse {
+        let request = try APNSRequestFactory.makeRequest(notification)
+        let (data, response) = try await session.data(for: request)
+        if let responce = response as? HTTPURLResponse,
+           let apnsStatus = APNSStatus(code: responce.statusCode),
+           let apnsId = responce.allHeaderFields["apns-id"] as? String {
+            let reason = try? Self.decoder.decode(APNSError.self, from: data)
+            return APNSResponse(status: apnsStatus, apnsId: apnsId, reason: reason)
+        } else {
+            throw APNSProviderError.parseResponce
         }
     }
 }

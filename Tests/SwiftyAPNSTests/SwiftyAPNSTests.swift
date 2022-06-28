@@ -116,47 +116,39 @@ final class SwiftyAPNSTests: XCTestCase {
 #endif
     }
     
-    func testAlertPushExample() {
-        sendPushNotification(alertPushExample)
-        waitForResponce()
+    func testAlertPushExample() async throws {
+        try await sendPushNotification(alertPushExample)
     }
     
-    func testAlertWithSubtitlePushExample() {
-        sendPushNotification(alertWithSubtitlePushExample)
-        waitForResponce()
+    func testAlertWithSubtitlePushExample() async throws {
+        try await sendPushNotification(alertWithSubtitlePushExample)
     }
     
-    func testLocalizableAlertPushExample() {
-        sendPushNotification(localizableAlertPushExample)
-        waitForResponce()
+    func testLocalizableAlertPushExample() async throws {
+        try await sendPushNotification(localizableAlertPushExample)
     }
     
-    func testAlertWithCustomActionsPushExample() {
-        sendPushNotification(alertWithCustomActionsPushExample)
-        waitForResponce()
+    func testAlertWithCustomActionsPushExample() async throws {
+        try await sendPushNotification(alertWithCustomActionsPushExample)
     }
     
-    func testLocalizableAlertPushWithCustomPayloadExample1() {
-        sendPushNotification(localizableAlertPushWithCustomPayloadExample1)
-        waitForResponce()
+    func testLocalizableAlertPushWithCustomPayloadExample1() async throws {
+        try await sendPushNotification(localizableAlertPushWithCustomPayloadExample1)
     }
 
-    func testLocalizableAlertPushWithCustomPayloadExample2() {
-        sendPushNotification(localizableAlertPushWithCustomPayloadExample2)
-        waitForResponce()
+    func testLocalizableAlertPushWithCustomPayloadExample2() async throws {
+        try await sendPushNotification(localizableAlertPushWithCustomPayloadExample2)
     }
 
-    func testModifyingContentPushExample() {
-        sendPushNotification(modifyingContentPushExample)
-        waitForResponce()
+    func testModifyingContentPushExample() async throws {
+        try await sendPushNotification(modifyingContentPushExample)
     }
     
-    func testBackgroundPushExample() {
-        sendPushNotification(backgroundPushExample)
-        waitForResponce()
+    func testBackgroundPushExample() async throws {
+        try await sendPushNotification(backgroundPushExample)
     }
     
-    func testSendingMultiplePushes() {
+    func testSendingMultiplePushes() async throws {
         let notifications: [Notification] = [
             .payload(notificatiuon: alertPushExample),
             .payload(notificatiuon: alertWithSubtitlePushExample),
@@ -164,8 +156,9 @@ final class SwiftyAPNSTests: XCTestCase {
             .payload(notificatiuon: alertWithCustomActionsPushExample),
             .payload4(notificatiuon: backgroundPushExample)
         ]
-        notifications.forEach(visit)
-        waitForResponce()
+        for notification in notifications {
+            try await visit(notification: notification)
+        }
     }
     
     static var allTests = [
