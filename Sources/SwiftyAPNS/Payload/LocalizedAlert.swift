@@ -8,6 +8,20 @@
 
 /// Child properties of the alert property.
 public struct APSLocalizedAlert: Encodable {
+    public init(title: String? = nil, subtitle: String? = nil, body: String? = nil, titleLocKey: String? = nil, titleLocArgs: [String]? = nil, subtitleLocKey: String? = nil, subtitleLocArgs: [String]? = nil, locKey: String? = nil, locArgs: [String]? = nil, actionLocKey: String? = nil, launchImage: String? = nil) {
+        self.title = title
+        self.subtitle = subtitle
+        self.body = body
+        self.titleLocKey = titleLocKey
+        self.titleLocArgs = titleLocArgs
+        self.subtitleLocKey = subtitleLocKey
+        self.subtitleLocArgs = subtitleLocArgs
+        self.locKey = locKey
+        self.locArgs = locArgs
+        self.actionLocKey = actionLocKey
+        self.launchImage = launchImage
+    }
+    
     /// A short string describing the purpose of the notification.
     public var title: String?
     
