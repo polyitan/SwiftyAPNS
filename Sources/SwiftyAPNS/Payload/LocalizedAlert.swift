@@ -8,6 +8,8 @@
 
 /// Child properties of the alert property.
 public struct APSLocalizedAlert: Encodable {
+    
+    /// Fix 'APSLocalizedAlert' initializer is inaccessible due to 'internal' protection level
     public init(title: String? = nil, subtitle: String? = nil, body: String? = nil, titleLocKey: String? = nil, titleLocArgs: [String]? = nil, subtitleLocKey: String? = nil, subtitleLocArgs: [String]? = nil, locKey: String? = nil, locArgs: [String]? = nil, actionLocKey: String? = nil, launchImage: String? = nil) {
         self.title = title
         self.subtitle = subtitle
